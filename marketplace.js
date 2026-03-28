@@ -36,20 +36,22 @@ function loadListings() {
         .orderBy('createdAt', 'desc')
         .onSnapshot(snapshot => {
             const listingsDiv = document.getElementById('listingsList');
-            listingsDiv.innerHTML = '';
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const listing = document.createElement('div');
-                listing.className = 'listing';
-                listing.innerHTML = `
-                    <h3>${data.productName}</h3>
-                    <div class="price">KES ${data.price}</div>
-                    <p>${data.description}</p>
-                    <p><strong>Contact:</strong> ${data.contact}</p>
-                    <p><em>Posted by ${data.userName}</em></p>
-                    ${data.userId === auth.currentUser?.uid ? `<button class="delete-btn" data-id="${doc.id}">Delete</button>` : ''}
-                `;
-                listingsDiv.appendChild(listing);
+           listingsGrid.innerHTML = '';
+           snapshot.forEach(doc => {
+           const data = doc.data();
+           const card = document.createElement('div');
+           card.className = 'listing-card';
+           card.innerHTML = `
+            <div class="content">
+            <h3>${data.productName}</h3>
+            <div class="price">KES ${data.price}</div>
+            <p>${data.description}</p>
+            <div class="contact"><strong>Contact:</strong> ${data.contact}</div>
+            <div><small>Posted by ${data.userName}</small></div>
+            ${data.userId === auth.currentUser?.uid ? `<button class="delete-btn" data-id="${doc.id}">Delete</button>` : ''}
+            </div>
+            `;
+            listingsGrid.appendChild(card);
             });
 
             // Attach delete listeners
