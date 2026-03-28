@@ -60,7 +60,7 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 async function fetchWeather(county) {
-    if (!WEATHER_API_KEY || WEATHER_API_KEY === 'YOUR_OPENWEATHER_API_KEY') {
+    if (!WEATHER_API_KEY || WEATHER_API_KEY === '448db4ca858db5dddfefff8bf17c8030') {
         document.getElementById('weatherWidget').innerHTML = '<p class="error">Weather API key missing. Please add your OpenWeatherMap API key.</p>';
         return;
     }
