@@ -3,60 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <title>Mkulima Alert - Forum</title>
-    <!-- include same CSS, Firebase scripts -->
+    <!-- same meta, fonts, CSS, Firebase SDKs as above -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/font/lucide.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
     <style>
-        .forum-container { max-width: 1200px; margin: 2rem auto; padding: 1rem; }
-        .category-list { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
-        .category-btn { padding: 0.5rem 1rem; background: #e2e8f0; border: none; border-radius: 0.5rem; cursor: pointer; }
-        .category-btn.active { background: var(--emerald); color: white; }
-        .topic-list { margin-top: 1rem; }
-        .topic { border-bottom: 1px solid #eee; padding: 1rem; cursor: pointer; }
-        .topic:hover { background: #f8fafc; }
-        .topic-title { font-weight: bold; }
-        .topic-meta { font-size: 0.8rem; color: #64748b; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; padding: 2rem; border-radius: 1rem; width: 90%; max-width: 500px; }
-        .close-modal { float: right; cursor: pointer; font-size: 1.5rem; }
+        /* forum-specific styles (optional) */
+        .topic-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .topic-card:hover {
+            background: var(--slate-50);
+            transform: translateX(4px);
+        }
     </style>
 </head>
 <body>
-    <div class="forum-container">
-        <h1>Farmer Forum</h1>
+<div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="logo">
+                <div class="logo-icon"><i data-lucide="cloud-sun"></i></div>
+                <div class="logo-text">
+                    <span class="logo-title">Mkulima Alert</span>
+                    <span class="logo-sub">Climate Smart</span>
+                </div>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">
+                <i data-lucide="cloud-sun"></i> Weather
+            </a>
+            <a href="marketplace.html" class="nav-item">
+                <i data-lucide="shopping-cart"></i> Marketplace
+            </a>
+            <a href="forum.html" class="nav-item active">
+                <i data-lucide="message-square"></i> Forum
+            </a>
+            <a href="consultation.html" class="nav-item">
+                <i data-lucide="phone-call"></i> Consultation
+            </a>
+            <a href="#" class="nav-item" id="logoutBtn">
+                <i data-lucide="log-out"></i> Logout
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Farmer Forum</h1>
+            <button class="menu-toggle-dashboard" id="menuToggle" style="display: none;">☰</button>
+        </div>
+
+        <!-- Forum content (keep your existing code) -->
         <div class="category-list" id="categoryList"></div>
         <button onclick="openNewTopicModal()" class="btn btn-primary">Start New Topic</button>
         <div id="topicsList" class="topic-list"></div>
-    </div>
+    </main>
+</div>
 
-    <!-- New Topic Modal -->
-    <div id="newTopicModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <h2>Create New Topic</h2>
-            <form id="newTopicForm">
-                <div class="form-group">
-                    <label>Category</label>
-                    <select id="topicCategory" required>
-                        <!-- populated by JS -->
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Title</label>
-                    <input type="text" id="topicTitle" required>
-                </div>
-                <div class="form-group">
-                    <label>Content</label>
-                    <textarea id="topicContent" rows="5" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Post Topic</button>
-            </form>
-        </div>
+<!-- New Topic Modal (same as before) -->
+<div id="newTopicModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h2>Create New Topic</h2>
+        <form id="newTopicForm">
+            <div class="form-group">
+                <label>Category</label>
+                <select id="topicCategory" required></select>
+            </div>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="topicTitle" required>
+            </div>
+            <div class="form-group">
+                <label>Content</label>
+                <textarea id="topicContent" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Post Topic</button>
+        </form>
     </div>
+</div>
 
-    <script src="forum.js"></script>
+<script src="forum.js"></script>
+<script>
+    // Sidebar toggle, logout, icons (same as marketplace)
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+    }
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        auth.signOut().then(() => window.location.href = "index.html");
+    });
+    lucide.createIcons();
+</script>
 </body>
 </html>
