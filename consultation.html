@@ -3,47 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <title>Ask an Extension Officer</title>
+    <!-- same meta, fonts, CSS, Firebase SDKs -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/font/lucide.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
+    <!-- EmailJS (optional) -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
         (function(){
-            emailjs.init("_7QphToGb-fJ9OC8p");
+            emailjs.init("YOUR_PUBLIC_KEY"); // replace with your actual key
         })();
     </script>
-    <style>
-        .consult-container { max-width: 600px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
-        input, textarea { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 0.5rem; }
-        button { background: var(--emerald); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer; }
-        button:hover { background: #0d9488; }
-    </style>
 </head>
 <body>
-    <div class="consult-container">
-        <h1>Ask an Extension Officer</h1>
-        <p>Have a question about crops, pests, or farming practices? Our team will get back to you soon.</p>
-        <form id="consultForm">
-            <div class="form-group">
-                <label>Your Name</label>
-                <input type="text" id="name" required>
-            </div>
-            <div class="form-group">
-                <label>Your Email</label>
-                <input type="email" id="email" required>
-            </div>
-            <div class="form-group">
-                <label>Your Question</label>
-                <textarea id="question" rows="5" required></textarea>
-            </div>
-            <button type="submit">Send Message</button>
-        </form>
-        <div id="status"></div>
-    </div>
-    <script src="consultation.js"></script>
+<div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="logo">
+                <div class="logo-icon"><i data-lucide="cloud-sun"></i></div>
+                <div class="logo-text">
+                    <span class="logo-title">Mkulima Alert</span>
+                    <span class="logo-sub">Climate Smart</span>
+                </div>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">
+                <i data-lucide="cloud-sun"></i> Weather
+            </a>
+            <a href="marketplace.html" class="nav-item">
+                <i data-lucide="shopping-cart"></i> Marketplace
+            </a>
+            <a href="forum.html" class="nav-item">
+                <i data-lucide="message-square"></i> Forum
+            </a>
+            <a href="consultation.html" class="nav-item active">
+                <i data-lucide="phone-call"></i> Consultation
+            </a>
+            <a href="#" class="nav-item" id="logoutBtn">
+                <i data-lucide="log-out"></i> Logout
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Ask an Extension Officer</h1>
+            <button class="menu-toggle-dashboard" id="menuToggle" style="display: none;">☰</button>
+        </div>
+
+        <div class="consult-container">
+            <p>Have a question about crops, pests, or farming practices? Our team will get back to you soon.</p>
+            <form id="consultForm">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Your Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Your Question</label>
+                    <textarea id="question" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+            <div id="status"></div>
+        </div>
+    </main>
+</div>
+
+<script src="consultation.js"></script>
+<script>
+    // Sidebar toggle, logout, icons
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+    }
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        auth.signOut().then(() => window.location.href = "index.html");
+    });
+    lucide.createIcons();
+</script>
 </body>
 </html>
