@@ -1,11 +1,9 @@
 // ============================================
 // OpenWeatherMap API Key – REPLACE WITH YOUR KEY
 // ============================================
-const WEATHER_API_KEY = '448db4ca858db5dddfefff8bf17c8030'; // <-- Paste your key here
+const WEATHER_API_KEY = '448db4ca858db5dddfefff8bf17c8030';
 
-// ============================================
-// Helper: Show notification (reuse from earlier)
-// ============================================
+// Helper: show notification
 function showNotification(type, message) {
     const oldNotif = document.querySelector('.notification-toast');
     if (oldNotif) oldNotif.remove();
@@ -20,24 +18,27 @@ function showNotification(type, message) {
     }, 5000);
 }
 
-// ============================================
-// Fetch weather for a given county (city name)
-// ============================================
+// Helper: format date to "Mon 25"
+function formatDay(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' });
+}
+
+// Fetch and display weather
 async function fetchWeather(county) {
-    const weatherDiv = document.getElementById('weatherWidget');
-    if (!weatherDiv) return;
+    const container = document.getElementById('weatherContainer');
+    if (!container) return;
 
     if (!WEATHER_API_KEY || WEATHER_API_KEY === 'YOUR_OPENWEATHER_API_KEY') {
-        weatherDiv.innerHTML = '<p class="error">⚠️ Weather API key missing. Please add your OpenWeatherMap API key in dashboard.js.</p>';
+        container.innerHTML = '<div class="error-message">⚠️ Weather API key missing. Please add your OpenWeatherMap API key in dashboard.js.</div>';
         return;
     }
 
-    // Map county name to a city name that OpenWeatherMap recognises.
-    // For most counties, the county name works, but some might need adjustments.
-    // You can expand this mapping if needed.
     const city = county.trim();
-
     const url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&units=metric&appid=${WEATHER_API_KEY}`;
+
+    // Show loading spinner
+    container.innerHTML = '<div class="spinner"></div>';
 
     try {
         const response = await fetch(url);
@@ -47,43 +48,72 @@ async function fetchWeather(county) {
         }
         const data = await response.json();
 
-        // Group by day (one forecast per day, using noon data)
-        const dailyForecasts = {};
+        // Extract current weather (first entry, today at noon)
+        const current = data.list[0];
+        const currentTemp = Math.round(current.main.temp);
+        const feelsLike = Math.round(current.main.feels_like);
+        const humidity = current.main.humidity;
+        const windSpeed = current.wind.speed;
+        const description = current.weather[0].description;
+        const icon = `https://openweathermap.org/img/wn/${current.weather[0].icon}@4x.png`;
+
+        // Group forecast by day
+        const daily = {};
         data.list.forEach(item => {
             const date = item.dt_txt.split(' ')[0];
-            if (!dailyForecasts[date]) {
-                dailyForecasts[date] = item;
+            if (!daily[date]) {
+                daily[date] = item;
             }
         });
+        const forecastArray = Object.values(daily).slice(1, 8); // next 7 days
 
-        const forecastArray = Object.values(dailyForecasts).slice(0, 7); // next 7 days
+        // Build HTML
+        let html = `
+            <div class="current-weather">
+                <div class="location">${city}</div>
+                <div class="weather-main">
+                    <div class="temp">${currentTemp}°C</div>
+                    <div class="weather-icon"><img src="${icon}" alt="${description}"></div>
+                </div>
+                <div class="description">${description}</div>
+                <div class="details">
+                    <div class="detail-item"><i data-lucide="thermometer"></i> Feels like ${feelsLike}°C</div>
+                    <div class="detail-item"><i data-lucide="droplet"></i> Humidity ${humidity}%</div>
+                    <div class="detail-item"><i data-lucide="wind"></i> Wind ${windSpeed} m/s</div>
+                </div>
+            </div>
+            <h3 style="margin: 2rem 0 1rem;">7-Day Forecast</h3>
+            <div class="forecast-grid">
+        `;
 
-        let html = '<div class="forecast-grid">';
         forecastArray.forEach(day => {
-            const date = new Date(day.dt * 1000).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' });
-            const temp = Math.round(day.main.temp);
-            const desc = day.weather[0].description;
-            const icon = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
+            const dayName = formatDay(day.dt_txt.split(' ')[0]);
+            const tempHigh = Math.round(day.main.temp_max);
+            const tempLow = Math.round(day.main.temp_min);
+            const iconCode = day.weather[0].icon;
+            const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
             html += `
                 <div class="forecast-card">
-                    <div><strong>${date}</strong></div>
-                    <img src="${icon}" alt="${desc}">
-                    <div>${temp}°C</div>
-                    <div>${desc}</div>
+                    <div class="forecast-day">${dayName}</div>
+                    <div class="forecast-icon"><img src="${iconUrl}" alt=""></div>
+                    <div class="forecast-temp">
+                        <span class="forecast-temp-high">${tempHigh}°</span>
+                        <span class="forecast-temp-low">${tempLow}°</span>
+                    </div>
                 </div>
             `;
         });
-        html += '</div>';
-        weatherDiv.innerHTML = html;
+
+        html += `</div>`;
+        container.innerHTML = html;
+        lucide.createIcons(); // re‑render icons
     } catch (error) {
         console.error(error);
-        weatherDiv.innerHTML = `<p class="error">⚠️ Could not fetch weather for "${city}". Please check the county name or your API key.</p>`;
+        container.innerHTML = `<div class="error-message">⚠️ Could not fetch weather for "${city}". Please check the county name or your API key.</div>`;
     }
 }
 
-// ============================================
 // Firebase Auth & Firestore integration
-// ============================================
 auth.onAuthStateChanged(async (user) => {
     if (!user) {
         window.location.href = "index.html";
@@ -106,8 +136,8 @@ auth.onAuthStateChanged(async (user) => {
             county: null
         });
         // Show a hint to select county
-        const weatherDiv = document.getElementById('weatherWidget');
-        if (weatherDiv) weatherDiv.innerHTML = '<p>Please select your county above to see the forecast.</p>';
+        const container = document.getElementById('weatherContainer');
+        if (container) container.innerHTML = '<div class="error-message">Please select your county above to see the forecast.</div>';
     } else {
         // Existing user: load saved county
         const savedCounty = doc.data().county;
@@ -116,9 +146,8 @@ auth.onAuthStateChanged(async (user) => {
             countySelect.value = savedCounty;
             fetchWeather(savedCounty);
         } else if (countySelect) {
-            // No saved county, prompt user
-            const weatherDiv = document.getElementById('weatherWidget');
-            if (weatherDiv) weatherDiv.innerHTML = '<p>Select your county above to see the forecast.</p>';
+            const container = document.getElementById('weatherContainer');
+            if (container) container.innerHTML = '<div class="error-message">Select your county above to see the forecast.</div>';
         }
     }
 
