@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Mkulima Alert - Marketplace</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,12 +51,12 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
             <h1>Marketplace</h1>
-            <button class="menu-toggle-dashboard" id="menuToggle" style="display: block;">☰</button>
+            <button class="menu-toggle-dashboard" id="menuToggle" style="display: none;">☰ Menu</button>
         </div>
 
-        <!-- Marketplace content (unchanged) -->
+        <!-- Form (exactly as you requested) -->
         <div class="card">
             <h2>List a Product</h2>
             <form id="productForm">
@@ -82,13 +82,14 @@
             </form>
         </div>
 
+        <!-- Listings Grid -->
         <div class="listings-grid" id="listingsGrid"></div>
     </main>
 </div>
 
 <script src="marketplace.js"></script>
 <script>
-    // Sidebar toggle
+    // Sidebar toggle for mobile
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
     if (menuToggle) {
