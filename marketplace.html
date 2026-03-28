@@ -45,40 +45,34 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h1>Marketplace</h1>
-            <button onclick="logout()" class="logout-btn" style="background:#dc2626; color:white; border:none; padding:0.5rem 1rem; border-radius:0.5rem;">Logout</button>
+  <div class="card">
+    <h2>List a Product</h2>
+    <form id="productForm">
+        <div class="form-group">
+            <label>Product Name</label>
+            <input type="text" id="productName" required>
         </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Price (KES)</label>
+                <input type="number" id="price" required>
+            </div>
+            <div class="form-group">
+                <label>Contact</label>
+                <input type="text" id="contact" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="description" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Post Listing</button>
+    </form>
+  </div>
 
-        <div class="form-card">
-            <h2>List a Product</h2>
-            <form id="productForm">
-                <div class="form-group">
-                    <label>Product Name</label>
-                    <input type="text" id="productName" required>
-                </div>
-                <div class="form-group">
-                    <label>Price (KES)</label>
-                    <input type="number" id="price" required>
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="description" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Contact (phone/email)</label>
-                    <input type="text" id="contact" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Post Listing</button>
-            </form>
-        </div>
-
-        <div class="listings">
-            <h2>All Listings</h2>
-            <div id="listingsList"></div>
-        </div>
-    </div>
+  <div class="listings-grid" id="listingsGrid">
+    <!-- cards will be injected here -->
+  </div>
     <script src="marketplace.js"></script>
 </body>
 </html>
