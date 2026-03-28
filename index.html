@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Mkulima Alert | Climate-Smart SMS for Kenyan Farmers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/font/lucide.css">
+    <link rel="stylesheet" href="style.css">
+
+   <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<!-- Your config -->
+<script src="firebase-config.js"></script>
+
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <div class="flex items-center justify-between">
+        <a href="#" class="logo">
+          <div class="logo-icon"><i data-lucide="cloud-sun" style="width:24px;height:24px"></i></div>
+          <div class="logo-text"><span class="logo-title">Mkulima Alert</span><span class="logo-sub">Climate Smart</span></div>
+        </a>
+        <div class="nav-menu">
+          <a class="nav-link" onclick="scrollToSection('hero')">Home</a>
+          <a class="nav-link" onclick="scrollToSection('intro')">About</a>
+          <a class="nav-link" onclick="scrollToSection('problem')">Problem</a>
+          <a class="nav-link" onclick="scrollToSection('solution')">Solution</a>
+          <a class="nav-link" onclick="scrollToSection('tech')">Technology</a>
+          <a class="nav-link" onclick="scrollToSection('contact')">Contact</a>
+          <button class="btn btn-primary" onclick="openModal('signup')">Get Started</button>
+          <button class="btn btn-outline" onclick="loginWithGoogle()">Sign in</button>
+        </div>
+        <button class="menu-toggle" title="Toggle menu" onclick="toggleMobileMenu()"><i data-lucide="menu" style="width:28px;height:28px"></i></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="close-btn" onclick="closeMobileMenu()"><i data-lucide="x" style="width:24px;height:24px"></i></button>
+    <div class="mobile-logo"><a href="#" class="logo"><div class="logo-icon"><i data-lucide="cloud-sun"></i></div><div class="logo-text"><span class="logo-title">Mkulima Alert</span><span class="logo-sub">Climate Smart</span></div></a></div>
+    <a class="mobile-nav-link" onclick="scrollToSection('hero'); closeMobileMenu();"><i data-lucide="home"></i> Home</a>
+    <a class="mobile-nav-link" onclick="scrollToSection('intro'); closeMobileMenu();"><i data-lucide="info"></i> About</a>
+    <a class="mobile-nav-link" onclick="scrollToSection('problem'); closeMobileMenu();"><i data-lucide="alert-triangle"></i> Problem</a>
+    <a class="mobile-nav-link" onclick="scrollToSection('solution'); closeMobileMenu();"><i data-lucide="lightbulb"></i> Solution</a>
+    <a class="mobile-nav-link" onclick="scrollToSection('tech'); closeMobileMenu();"><i data-lucide="cpu"></i> Technology</a>
+    <a class="mobile-nav-link" onclick="scrollToSection('contact'); closeMobileMenu();"><i data-lucide="mail"></i> Contact</a>
+    <button class="mobile-btn btn-primary" onclick="openModal('signup'); closeMobileMenu();">Get Started</button>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="hero-bg"><div class="hero-circle hero-circle-emerald"></div><div class="hero-circle hero-circle-blue"></div></div>
+    <div class="hero-content">
+      <div class="hero-chip"><i data-lucide="smartphone"></i> SMS-Based Weather Alerts</div>
+      <p class="hero-tagline">Your farm. Your future.</p>
+      <h1 class="hero-title font-display">Climate-smart SMS alerts for <span>Kenya's farmers</span></h1>
+      <p class="hero-desc">Mkulima Alert delivers daily weather forecasts in local languages to basic phones, helping smallholder farmers make informed decisions and adapt to climate change.</p>
+      <div class="hero-buttons">
+        <a class="btn-hero btn-hero-primary" onclick="scrollToSection('intro')"><i data-lucide="info"></i> Learn More</a>
+        <a class="btn-hero btn-hero-secondary" onclick="openModal('signup')"><i data-lucide="user-plus"></i> Join Waitlist</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Introduction -->
+  <section class="intro" id="intro">
+    <div class="container">
+      <div class="intro-grid">
+        <div class="intro-content">
+          <span class="section-label">Introduction</span>
+          <h2 class="intro-title font-display">Agriculture is Kenya's Backbone</h2>
+          <p class="intro-text">Agriculture contributes over <strong>33% of Kenya's GDP</strong> and employs more than <strong>70% of the rural population</strong>. Yet, smallholder farmers face unprecedented challenges due to climate change, with unpredictable weather patterns threatening crop yields and food security.</p>
+          <p class="intro-text">Traditional farming knowledge is no longer reliable as climate shifts accelerate, making modern weather forecasting essential. However, this information remains largely inaccessible to rural farming communities who lack smartphones, internet access, and technical literacy.</p>
+          <p class="intro-text" style="font-weight: 600; color: var(--slate-800);"><i data-lucide="arrow-right"></i> Mkulima Alert bridges the gap between meteorological science and rural farming communities.</p>
+        </div>
+        <div class="intro-stats">
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-number">33%</div><div class="stat-label">of GDP</div></div>
+            <div class="stat-card"><div class="stat-number">70%</div><div class="stat-label">Rural Employment</div></div>
+            <div class="stat-card"><div class="stat-number">10M+</div><div class="stat-label">Smallholder Farmers</div></div>
+            <div class="stat-card"><div class="stat-number">95%</div><div class="stat-label">Basic Phone Access</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem -->
+  <section class="problem" id="problem">
+    <div class="container">
+      <div class="problem-header">
+        <span class="section-label">The Challenge</span>
+        <h2 class="section-title font-display">Climate Change is Disrupting Farming</h2>
+        <p class="section-desc">Traditional farming knowledge is failing as climate patterns shift beyond historical norms, leaving farmers vulnerable.</p>
+      </div>
+      <div class="problem-quote"><p class="problem-quote-text">"I don't have Google. I don't read charts. I just need to know … will it rain tomorrow?"</p><p class="problem-quote-author">— A Kenyan Smallholder Farmer</p></div>
+      <div class="problem-cards">
+        <div class="problem-card"><div class="problem-card-icon" style="background:rgba(249,115,22,0.1);color:var(--orange)"><i data-lucide="cloud-off"></i></div><h3 class="problem-card-title">Unreliable Traditional Knowledge</h3><p class="problem-card-text">Climate patterns are shifting faster than generational knowledge can adapt, making traditional farming cues increasingly unreliable.</p></div>
+        <div class="problem-card"><div class="problem-card-icon" style="background:rgba(239,68,68,0.1);color:#ef4444"><i data-lucide="smartphone-off"></i></div><h3 class="problem-card-title">No Smartphone Access</h3><p class="problem-card-text">Most rural farmers use basic phones without internet, making app-based weather services inaccessible.</p></div>
+        <div class="problem-card"><div class="problem-card-icon" style="background:rgba(59,130,246,0.1);color:var(--blue)"><i data-lucide="file-x"></i></div><h3 class="problem-card-title">Technical Jargon</h3><p class="problem-card-text">Weather forecasts are presented in technical formats that require interpretation skills most farmers don't have.</p></div>
+        <div class="problem-card"><div class="problem-card-icon" style="background:rgba(16,185,129,0.1);color:var(--emerald)"><i data-lucide="globe"></i></div><h3 class="problem-card-title">Language Barriers</h3><p class="problem-card-text">Weather information is rarely available in local languages that rural farmers understand.</p></div>
+        <div class="problem-card"><div class="problem-card-icon" style="background:rgba(234,179,8,0.1);color:#eab308"><i data-lucide="radio"></i></div><h3 class="problem-card-title">No Consistent Channel</h3><p class="problem-card-text">Farmers lack a reliable, consistent channel for receiving weather information when they need it.</p></div>
+        <div class="problem-card"><div class="problem-card-icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6"><i data-lucide="wallet"></i></div><h3 class="problem-card-title">Limited Resources</h3><p class="problem-card-text">Most farmers cannot afford expensive data plans or premium weather services.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SDGs -->
+  <section class="sdgs" id="sdgs">
+    <div class="container">
+      <div class="text-center"><span class="section-label">Sustainable Development Goals</span><h2 class="section-title font-display">Aligning with Global Targets</h2><p class="section-desc">Mkulima Alert contributes to multiple UN Sustainable Development Goals</p></div>
+      <div class="sdgs-grid">
+        <div class="sdg-card"><div class="sdg-icon" style="background:#16a34a"><i data-lucide="hand-heart"></i></div><div class="sdg-name">SDG 1<br>No Poverty</div></div>
+        <div class="sdg-card"><div class="sdg-icon" style="background:#ea580c"><i data-lucide="utensils"></i></div><div class="sdg-name">SDG 2<br>Zero Hunger</div></div>
+        <div class="sdg-card"><div class="sdg-icon" style="background:#0ea5e9"><i data-lucide="cloud-sun"></i></div><div class="sdg-name">SDG 13<br>Climate Action</div></div>
+        <div class="sdg-card"><div class="sdg-icon" style="background:#6366f1"><i data-lucide="cpu"></i></div><div class="sdg-name">SDG 9<br>Industry & Innovation</div></div>
+        <div class="sdg-card"><div class="sdg-icon" style="background:#f43f5e"><i data-lucide="scale"></i></div><div class="sdg-name">SDG 10<br>Reduced Inequalities</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Objectives -->
+  <section class="objectives" id="objectives">
+    <div class="container">
+      <div class="text-center"><span class="section-label">Our Mission</span><h2 class="section-title font-display">Project Objectives</h2><p class="section-desc">Eight key objectives to transform climate information for Kenyan farmers</p></div>
+      <div class="objectives-grid">
+        <div class="objective-card"><span class="objective-number">1</span><p class="objective-text">Develop and deploy an AI-powered weather analysis engine tailored to Kenya's agro-ecological zones</p></div>
+        <div class="objective-card"><span class="objective-number">2</span><p class="objective-text">Integrate data from KMD, NASA POWER, and ECMWF for comprehensive forecasting</p></div>
+        <div class="objective-card"><span class="objective-number">3</span><p class="objective-text">Translate complex weather data into simple, actionable messages in local dialects</p></div>
+        <div class="objective-card"><span class="objective-number">4</span><p class="objective-text">Establish SMS delivery infrastructure using Africa's Talking and direct carrier partnerships</p></div>
+        <div class="objective-card"><span class="objective-number">5</span><p class="objective-text">Create a farmer profiling system to deliver personalized agricultural advisories</p></div>
+        <div class="objective-card"><span class="objective-number">6</span><p class="objective-text">Implement a radio amplification system for community-wide dissemination</p></div>
+        <div class="objective-card"><span class="objective-number">7</span><p class="objective-text">Establish a feedback loop for continuous model improvement</p></div>
+        <div class="objective-card"><span class="objective-number">8</span><p class="objective-text">Develop a sustainable freemium revenue model ensuring long-term viability</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Innovation -->
+  <section class="innovation" id="solution">
+    <div class="container">
+      <div class="text-center"><span class="section-label">Innovation</span><h2 class="section-title font-display">What Makes Us Different</h2><p class="section-desc">Our unique approach combines technology with local understanding</p></div>
+      <div class="innovation-grid">
+        <div class="innovation-card"><div class="innovation-icon"><i data-lucide="database"></i></div><h3 class="innovation-title">Trusted Data Sources</h3><p class="innovation-text">Integration with KMD, NASA POWER, and ECMWF for accurate, reliable weather predictions.</p></div>
+        <div class="innovation-card"><div class="innovation-icon"><i data-lucide="brain"></i></div><h3 class="innovation-title">AI-Powered Analysis</h3><p class="innovation-text">Advanced AI specifically trained on Kenyan agricultural patterns and local conditions.</p></div>
+        <div class="innovation-card"><div class="innovation-icon"><i data-lucide="languages"></i></div><h3 class="innovation-title">Local Language Support</h3><p class="innovation-text">NLP-powered translation into Kiswahili and major local dialects for better understanding.</p></div>
+        <div class="innovation-card"><div class="innovation-icon"><i data-lucide="message-circle"></i></div><h3 class="innovation-title">SMS Delivery</h3><p class="innovation-text">Optimized for basic phones - no smartphone or internet required to receive alerts.</p></div>
+        <div class="innovation-card"><div class="innovation-icon"><i data-lucide="radio"></i></div><h3 class="innovation-title">Radio Amplification</h3><p class="innovation-text">Partner with community radio stations to reach even more farmers in the region.</p></div>
+        <div class="innovation-card"><div class="innovation-icon"><i data-lucide="users"></i></div><h3 class="innovation-title">Farmer Profiling</h3><p class="innovation-text">Personalized advisories based on location, crop type, and farming practices.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Workflow -->
+  <section class="workflow" id="workflow">
+    <div class="container">
+      <div class="workflow-header"><span class="section-label" style="color:var(--emerald)">How It Works</span><h2 class="workflow-title font-display">Daily Prediction Loop</h2><p class="workflow-desc">Our system runs automatically every day to deliver timely weather forecasts</p></div>
+      <div class="timeline">
+        <div class="timeline-item"><div class="timeline-marker"><i data-lucide="download"></i></div><div class="timeline-content"><div class="timeline-time">4:00 AM - 6:00 AM</div><div class="timeline-desc">Daily data fetch from KMD, NASA POWER, and ECMWF APIs</div></div></div>
+        <div class="timeline-item"><div class="timeline-marker"><i data-lucide="cpu"></i></div><div class="timeline-content"><div class="timeline-time">6:00 AM - 6:30 AM</div><div class="timeline-desc">AI analysis of weather patterns and agricultural impact assessment</div></div></div>
+        <div class="timeline-item"><div class="timeline-marker"><i data-lucide="languages"></i></div><div class="timeline-content"><div class="timeline-time">6:30 AM - 7:00 AM</div><div class="timeline-desc">Message generation and translation into local dialects</div></div></div>
+        <div class="timeline-item"><div class="timeline-marker"><i data-lucide="send"></i></div><div class="timeline-content"><div class="timeline-time">7:00 AM - 8:00 AM</div><div class="timeline-desc">SMS dispatch to registered farmers</div></div></div>
+        <div class="timeline-item"><div class="timeline-marker"><i data-lucide="radio"></i></div><div class="timeline-content"><div class="timeline-time">8:00 AM - 9:00 AM</div><div class="timeline-desc">Radio producer feed for community radio stations</div></div></div>
+        <div class="timeline-item"><div class="timeline-marker"><i data-lucide="refresh-cw"></i></div><div class="timeline-content"><div class="timeline-time">Ongoing</div><div class="timeline-desc">Feedback collection and continuous model improvement</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sample SMS -->
+  <section class="sample-sms" id="samples">
+    <div class="container">
+      <div class="text-center"><span class="section-label">Sample Messages</span><h2 class="section-title font-display">What Farmers Receive</h2><p class="section-desc">Simple, actionable weather messages in Kiswahili with English translations</p></div>
+      <div class="sms-grid">
+        <div class="sms-card"><div class="sms-label swahili">Kiswahili</div><p class="sms-text">Mkulima Alert: Kesho utapata mvua nguvu katika eneo lako. Panda mbwa za majani mwanzoni mwa Aprili.</p><div class="sms-label english">English</div><p class="sms-text">Mkulima Alert: Tomorrow you will receive heavy rain in your area. Start planting vegetables early in April.</p></div>
+        <div class="sms-card"><div class="sms-label swahili">Kiswahili</div><p class="sms-text">Mkulima Alert: Jua kali sana leo! Hakikisha umenyunyiza mimea yako asubuhi na jioni.</p><div class="sms-label english">English</div><p class="sms-text">Mkulima Alert: Very hot sun today! Make sure to water your plants in the morning and evening.</p></div>
+        <div class="sms-card"><div class="sms-label swahili">Kiswahili</div><p class="sms-text">Mkulima Alert: Msimu wa kupanda ni wa Aprili-Mei. Subiri mvua za kwanza kabla ya kupanda.</p><div class="sms-label english">English</div><p class="sms-text">Mkulima Alert: The planting season is April-May. Wait for the first rains before planting.</p></div>
+        <div class="sms-card"><div class="sms-label swahili">Kiswahili</div><p class="sms-text">Mkulima Alert: Mvua kubwa inatarajiwa wikiendi hii. Chelewesha upanzi hadi Jumanne.</p><div class="sms-label english">English</div><p class="sms-text">Mkulima Alert: Heavy rain expected this weekend. Delay planting until Tuesday.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technology Stack -->
+  <section class="tech-stack" id="tech">
+    <div class="container">
+      <div class="text-center"><span class="section-label">Technology</span><h2 class="section-title font-display">Our Technology Stack</h2><p class="section-desc">Built with robust, scalable technologies</p></div>
+      <div class="tech-grid">
+        <div class="tech-section"><h3 class="tech-section-title">Data & AI Layer</h3><div class="tech-table"><div class="tech-table-row"><span class="tech-component">AI Engine</span><span class="tech-name">Python / TensorFlow</span></div><div class="tech-table-row"><span class="tech-component">Translation</span><span class="tech-name">NLP with local language support</span></div><div class="tech-table-row"><span class="tech-component">Database</span><span class="tech-name">PostgreSQL + Redis</span></div><div class="tech-table-row"><span class="tech-component">Hosting</span><span class="tech-name">AWS / Kenya Data Center</span></div></div></div>
+        <div class="tech-section"><h3 class="tech-section-title">Communication Layer</h3><div class="tech-table"><div class="tech-table-row"><span class="tech-component">SMS Gateway</span><span class="tech-name">Africa's Talking, Direct carrier APIs</span></div><div class="tech-table-row"><span class="tech-component">Radio Integration</span><span class="tech-name">Automated feed to partner radio stations</span></div><div class="tech-table-row"><span class="tech-component">USSD</span><span class="tech-name">Basic menu-driven interface</span></div><div class="tech-table-row"><span class="tech-component">Farmer App (Optional)</span><span class="tech-name">Progressive Web App (PWA)</span></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Monitoring -->
+  <section class="monitoring" id="monitoring">
+    <div class="container">
+      <div class="text-center"><span class="section-label">Monitoring & Evaluation</span><h2 class="section-title font-display">Tracking Our Impact</h2><p class="section-desc">We continuously monitor our performance to ensure we deliver value to farmers</p></div>
+      <div class="monitoring-grid">
+        <div class="monitoring-card"><h3 class="monitoring-title">Key Performance Indicators</h3><div class="kpi-list"><div class="kpi-item"><span class="kpi-name">SMS Delivery Rate</span><span class="kpi-target">> 98%</span></div><div class="kpi-item"><span class="kpi-name">Farmer Satisfaction</span><span class="kpi-target">> 85%</span></div><div class="kpi-item"><span class="kpi-name">Weather Accuracy (24hrs)</span><span class="kpi-target">> 80%</span></div><div class="kpi-item"><span class="kpi-name">Active Farmers (Year 1)</span><span class="kpi-target">10,000+</span></div></div></div>
+        <div class="monitoring-card"><h3 class="monitoring-title">Monitoring Components</h3><div class="kpi-list"><div class="kpi-item"><span class="kpi-name">Google Forms Feedback</span><span class="kpi-target">✓</span></div><div class="kpi-item"><span class="kpi-name">Analytics Dashboard</span><span class="kpi-target">✓</span></div><div class="kpi-item"><span class="kpi-name">SMS Surveys</span><span class="kpi-target">✓</span></div><div class="kpi-item"><span class="kpi-name">Field Interviews</span><span class="kpi-target">✓</span></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pilot -->
+  <section class="pilot" id="pilot">
+    <div class="container">
+      <div class="text-center"><span class="section-label">Pilot Program</span><h2 class="section-title font-display">Launch Plan</h2><p class="section-desc">Starting small to make a big impact</p></div>
+      <div class="pilot-card"><div class="pilot-grid"><div class="pilot-item"><div class="pilot-label">Location</div><div class="pilot-value">Kakamega County</div></div><div class="pilot-item"><div class="pilot-label">Target Farmers</div><div class="pilot-value">1,000</div></div><div class="pilot-item"><div class="pilot-label">Duration</div><div class="pilot-value">6 Months</div></div><div class="pilot-item"><div class="pilot-label">Timeline</div><div class="pilot-value">01-04 2026</div></div></div></div>
+    </div>
+  </section>
+
+  <!-- Sustainability -->
+  <section class="sustainability" id="sustainability">
+    <div class="container">
+      <div class="text-center"><span class="section-label">Sustainability</span><h2 class="section-title font-display">Building for the Long Term</h2><p class="section-desc">A sustainable business model that keeps farmers at the center</p></div>
+      <div class="sustain-grid">
+        <div class="sustain-card"><div class="sustain-icon"><i data-lucide="gift"></i></div><h3 class="sustain-title">Freemium Model</h3><p class="sustain-text">Basic weather forecasts free for all farmers</p></div>
+        <div class="sustain-card"><div class="sustain-icon"><i data-lucide="credit-card"></i></div><h3 class="sustain-title">Premium Service</h3><p class="sustain-text">KES 100/month for detailed advisories</p></div>
+        <div class="sustain-card"><div class="sustain-icon"><i data-lucide="handshake"></i></div><h3 class="sustain-title">Government Partnerships</h3><p class="sustain-text">County government subsidies for vulnerable farmers</p></div>
+        <div class="sustain-card"><div class="sustain-icon"><i data-lucide="wallet"></i></div><h3 class="sustain-title">M-Pesa Integration</h3><p class="sustain-text">Easy mobile payments for premium services</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data Protection -->
+  <section class="data-protection" id="privacy">
+    <div class="container">
+      <div class="text-center"><span class="section-label">Data Protection</span><h2 class="section-title font-display">Your Data, Your Rights</h2><p class="section-desc">We are committed to protecting farmer data and privacy</p></div>
+      <div class="protection-card">
+        <p>Mkulima Alert is committed to responsible data handling practices that prioritize farmer privacy and security. All data collection and usage follows strict ethical guidelines and complies with Kenya's Data Protection Act (2019).</p>
+        <ul class="protection-list">
+          <li class="protection-item"><i data-lucide="check-circle" class="protection-icon"></i><span>Voluntary opt-in with informed consent - farmers choose to join</span></li>
+          <li class="protection-item"><i data-lucide="check-circle" class="protection-icon"></i><span>Secure data storage with encryption - protecting farmer information</span></li>
+          <li class="protection-item"><i data-lucide="check-circle" class="protection-icon"></i><span>No sharing of personal data with third parties without explicit consent</span></li>
+          <li class="protection-item"><i data-lucide="check-circle" class="protection-icon"></i><span>Farmer data anonymized for AI training - protecting individual privacy</span></li>
+          <li class="protection-item"><i data-lucide="check-circle" class="protection-icon"></i><span>Right to deletion - farmers can request their data be removed at any time</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partners -->
+  <section class="partners" id="partners">
+    <div class="container">
+      <div class="text-center"><span class="section-label">Partnerships</span><h2 class="section-title font-display">Working Together</h2><p class="section-desc">Strategic partnerships to maximize our impact</p></div>
+      <div class="partners-grid">
+        <div class="partner-card"><div class="partner-name">Kenya Meteorological Department</div><div class="partner-role">Data Provider</div><p class="partner-desc">Official weather data and forecast collaboration</p></div>
+        <div class="partner-card"><div class="partner-name">KALRO</div><div class="partner-role">Research Partner</div><p class="partner-desc">Agricultural expertise and validation</p></div>
+        <div class="partner-card"><div class="partner-name">Safaricom / Africa's Talking</div><div class="partner-role">Technology Partner</div><p class="partner-desc">SMS infrastructure and connectivity</p></div>
+        <div class="partner-card"><div class="partner-name">Local SACCOs</div><div class="partner-role">Distribution Partner</div><p class="partner-desc">Farmer mobilization and payment collection</p></div>
+        <div class="partner-card"><div class="partner-name">County Governments</div><div class="partner-role">Policy Partner</div><p class="partner-desc">Policy support and resource mobilization</p></div>
+        <div class="partner-card"><div class="partner-name">NGO Partners</div><div class="partner-role">Implementation Partner</div><p class="partner-desc">Farmer training and community engagement</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- References -->
+  <section class="references" id="references">
+    <div class="container">
+      <h3 class="references-title">References & Sources</h3>
+      <ul class="references-list">
+        <li class="reference-item">Kenya Meteorological Department - www.meteo.go.ke</li>
+        <li class="reference-item">NASA POWER - power.larc.nasa.gov</li>
+        <li class="reference-item">Kenya Vision 2030 - Agriculture Sector</li>
+        <li class="reference-item">IPCC Sixth Assessment Report - Climate Change 2023</li>
+        <li class="reference-item">Kenya Data Protection Act, 2019</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="contact">
+    <div class="container">
+      <div class="cta-card">
+        <h2 class="cta-title font-display">Ready to Transform Your Farming?</h2>
+        <p class="cta-desc">Join thousands of Kenyan farmers who are already benefiting from climate-smart weather alerts.</p>
+        <button class="cta-btn" onclick="openModal('signup')"><i data-lucide="user-plus"></i> Join the Waitlist</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo"><div class="footer-icon"><i data-lucide="cloud-sun"></i></div><span class="footer-brand">Mkulima Alert</span></div>
+        <div class="footer-contact">
+          <a href="mailto:info@mkulimaalert.com" class="footer-link"><i data-lucide="mail"></i> info@mkulimaalert.com</a>
+          <a href="#" class="footer-link"><i data-lucide="phone"></i> +254 723100467</a>
+          <a href="#" class="footer-link"><i data-lucide="map-pin"></i> Kakamega, Kenya</a>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>&copy; <span id="currentYear"></span> Mkulima Alert. All rights reserved. A Jowsh Agritech Project.</p></div>
+    </div>
+  </footer>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="signupModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('signup')"><i data-lucide="x"></i></button>
+      <div class="modal-content">
+        <div class="modal-header"><div class="modal-icon"><i data-lucide="user-plus"></i></div><h3 class="modal-title">Join the Waitlist</h3></div>
+        <p style="text-align:center;color:var(--slate-600);margin-bottom:1.5rem">Be the first to know when Mkulima Alert launches in your area!</p>
+        <form id="signupForm">
+          <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input" name="name" placeholder="Enter your full name" required></div>
+          <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" class="form-input" name="phone" placeholder="+254 700 000000" required></div>
+          <div class="form-group"><label class="form-label">Location (County)</label><input type="text" class="form-input" name="location" placeholder="e.g., Kakamega, Bungoma" required></div>
+          <div class="form-group"><label class="form-label">Main Crops Grown</label><input type="text" class="form-input" name="crops" placeholder="e.g., Maize, Beans, Vegetables"></div>
+          <button type="submit" class="btn-submit"><i data-lucide="send"></i> Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>
