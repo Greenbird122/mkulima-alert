@@ -7,51 +7,55 @@ auth.onAuthStateChanged(user => {
 });
 
 const productForm = document.getElementById('productForm');
-productForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const user = auth.currentUser;
-    if (!user) return;
+if (productForm) {
+    productForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = auth.currentUser;
+        if (!user) return;
 
-    const productName = document.getElementById('productName').value;
-    const price = parseFloat(document.getElementById('price').value);
-    const description = document.getElementById('description').value;
-    const contact = document.getElementById('contact').value;
+        const productName = document.getElementById('productName').value;
+        const price = parseFloat(document.getElementById('price').value);
+        const description = document.getElementById('description').value;
+        const contact = document.getElementById('contact').value;
 
-    await db.collection('marketplace').add({
-        userId: user.uid,
-        userName: user.displayName,
-        productName: productName,
-        price: price,
-        description: description,
-        contact: contact,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        await db.collection('marketplace').add({
+            userId: user.uid,
+            userName: user.displayName,
+            productName: productName,
+            price: price,
+            description: description,
+            contact: contact,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        productForm.reset();
+        showNotification('success', 'Product listed!');
     });
-
-    productForm.reset();
-    showNotification('success', 'Product listed!');
-});
+}
 
 function loadListings() {
     db.collection('marketplace')
         .orderBy('createdAt', 'desc')
         .onSnapshot(snapshot => {
-            const listingsDiv = document.getElementById('listingsList');
-           listingsGrid.innerHTML = '';
-           snapshot.forEach(doc => {
-           const data = doc.data();
-           const card = document.createElement('div');
-           card.className = 'listing-card';
-           card.innerHTML = `
-            <div class="content">
-            <h3>${data.productName}</h3>
-            <div class="price">KES ${data.price}</div>
-            <p>${data.description}</p>
-            <div class="contact"><strong>Contact:</strong> ${data.contact}</div>
-            <div><small>Posted by ${data.userName}</small></div>
-            ${data.userId === auth.currentUser?.uid ? `<button class="delete-btn" data-id="${doc.id}">Delete</button>` : ''}
-            </div>
-            `;
-            listingsGrid.appendChild(card);
+            const listingsContainer = document.getElementById('listingsGrid');
+            if (!listingsContainer) return;
+            listingsContainer.innerHTML = '';
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const card = document.createElement('div');
+                card.className = 'listing-card';
+                card.innerHTML = `
+                    <div class="content">
+                        <h3>${escapeHtml(data.productName)}</h3>
+                        <div class="price">KES ${data.price}</div>
+                        <p>${escapeHtml(data.description)}</p>
+                        <div class="contact"><strong>Contact:</strong> ${escapeHtml(data.contact)}</div>
+                        <div><small>Posted by ${escapeHtml(data.userName)}</small></div>
+                        ${data.userId === auth.currentUser?.uid ? `<button class="delete-btn" data-id="${doc.id}">Delete</button>` : ''}
+                    </div>
+                `;
+                listingsContainer.appendChild(card);
             });
 
             // Attach delete listeners
@@ -60,10 +64,22 @@ function loadListings() {
                     const id = btn.getAttribute('data-id');
                     if (confirm('Delete this listing?')) {
                         await db.collection('marketplace').doc(id).delete();
+                        showNotification('success', 'Listing deleted');
                     }
                 });
             });
         });
+}
+
+// Helper to prevent XSS
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
 }
 
 function showNotification(type, message) {
