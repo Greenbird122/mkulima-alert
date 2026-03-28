@@ -9,71 +9,100 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/font/lucide.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="marketplace.css">
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <style>
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 1rem;
-        }
-        .form-card, .listings {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-        .listing {
-            border-bottom: 1px solid #eee;
-            padding: 1rem 0;
-        }
-        .listing:last-child { border-bottom: none; }
-        .listing h3 { margin: 0 0 0.5rem; }
-        .price { font-weight: bold; color: var(--emerald); }
-        .delete-btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-    </style>
 </head>
 <body>
-  <div class="card">
-    <h2>List a Product</h2>
-    <form id="productForm">
-        <div class="form-group">
-            <label>Product Name</label>
-            <input type="text" id="productName" required>
+<div class="dashboard-layout">
+    <!-- Sidebar (same as dashboard) -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="logo">
+                <div class="logo-icon"><i data-lucide="cloud-sun"></i></div>
+                <div class="logo-text">
+                    <span class="logo-title">Mkulima Alert</span>
+                    <span class="logo-sub">Climate Smart</span>
+                </div>
+            </a>
         </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Price (KES)</label>
-                <input type="number" id="price" required>
-            </div>
-            <div class="form-group">
-                <label>Contact</label>
-                <input type="text" id="contact" required>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Description</label>
-            <textarea id="description" rows="3" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Post Listing</button>
-    </form>
-  </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">
+                <i data-lucide="cloud-sun"></i> Weather
+            </a>
+            <a href="marketplace.html" class="nav-item active">
+                <i data-lucide="shopping-cart"></i> Marketplace
+            </a>
+            <a href="forum.html" class="nav-item">
+                <i data-lucide="message-square"></i> Forum
+            </a>
+            <a href="consultation.html" class="nav-item">
+                <i data-lucide="phone-call"></i> Consultation
+            </a>
+            <a href="#" class="nav-item" id="logoutBtn">
+                <i data-lucide="log-out"></i> Logout
+            </a>
+        </nav>
+    </aside>
 
-  <div class="listings-grid" id="listingsGrid">
-    <!-- cards will be injected here -->
-  </div>
-    <script src="marketplace.js"></script>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Marketplace</h1>
+            <button class="menu-toggle-dashboard" id="menuToggle" style="display: none;">☰</button>
+        </div>
+
+        <!-- Marketplace content (unchanged) -->
+        <div class="card">
+            <h2>List a Product</h2>
+            <form id="productForm">
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price (KES)</label>
+                        <input type="number" id="price" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact</label>
+                        <input type="text" id="contact" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Post Listing</button>
+            </form>
+        </div>
+
+        <div class="listings-grid" id="listingsGrid"></div>
+    </main>
+</div>
+
+<script src="marketplace.js"></script>
+<script>
+    // Sidebar toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+    }
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        auth.signOut().then(() => window.location.href = "index.html");
+    });
+    // Lucide icons
+    lucide.createIcons();
+</script>
 </body>
 </html>
