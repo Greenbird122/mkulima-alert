@@ -60,6 +60,21 @@
     height: 20px;
 }
 
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    .main-content {
+        margin-left: 0;
+    }
+    .menu-toggle-dashboard {
+        display: block;
+    }
+}
+
 /* Main Content */
 .main-content {
     flex: 1;
