@@ -1,7 +1,7 @@
 // ============================================
 // OpenWeatherMap API Key
 // ============================================
-const WEATHER_API_KEY = '3718844e76e32727eb66f5a14fa67841'; // <-- Your key
+const WEATHER_API_KEY = '3718844e76e32727eb66f5a14fa67841';
 
 // Helper: show notification
 function showNotification(type, message) {
@@ -37,7 +37,6 @@ async function fetchWeather(county) {
     const city = county.trim();
     const url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&units=metric&appid=${WEATHER_API_KEY}`;
 
-    // Show loading spinner
     container.innerHTML = '<div class="spinner"></div>';
 
     try {
@@ -48,7 +47,6 @@ async function fetchWeather(county) {
         }
         const data = await response.json();
 
-        // Extract current weather (first entry)
         const current = data.list[0];
         const currentTemp = Math.round(current.main.temp);
         const feelsLike = Math.round(current.main.feels_like);
@@ -57,7 +55,6 @@ async function fetchWeather(county) {
         const description = current.weather[0].description;
         const icon = `https://openweathermap.org/img/wn/${current.weather[0].icon}@4x.png`;
 
-        // Group forecast by day
         const daily = {};
         data.list.forEach(item => {
             const date = item.dt_txt.split(' ')[0];
@@ -65,9 +62,8 @@ async function fetchWeather(county) {
                 daily[date] = item;
             }
         });
-        const forecastArray = Object.values(daily).slice(1, 8); // next 7 days
+        const forecastArray = Object.values(daily).slice(1, 8);
 
-        // Build HTML
         let html = `
             <div class="current-weather">
                 <div class="location">${city}</div>
@@ -106,7 +102,7 @@ async function fetchWeather(county) {
 
         html += `</div>`;
         container.innerHTML = html;
-        lucide.createIcons(); // re‑render icons
+        // No lucide.createIcons() – using font icons only
     } catch (error) {
         console.error(error);
         container.innerHTML = `<div class="error-message">⚠️ Could not fetch weather for "${city}". Please check your county in profile.</div>`;
@@ -120,7 +116,6 @@ auth.onAuthStateChanged(async (user) => {
         return;
     }
 
-    // Display user name
     const userNameSpan = document.getElementById('userName');
     if (userNameSpan) userNameSpan.textContent = user.displayName || 'Farmer';
 
@@ -131,7 +126,6 @@ auth.onAuthStateChanged(async (user) => {
     if (doc.exists) {
         savedCounty = doc.data().county;
     } else {
-        // Create profile if missing (should not happen if profile page was used)
         await userRef.set({
             name: user.displayName,
             email: user.email,
