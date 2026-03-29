@@ -14,7 +14,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
     <style>
-        /* ---------- Global Variables ---------- */
+        /* All styles remain exactly as in the previous version – no changes needed */
         :root {
             --orange: #f97316;
             --emerald: #10b981;
@@ -31,26 +31,21 @@
             --slate-50: #f8fafc;
             --white: #ffffff;
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Inter', sans-serif;
             background: var(--slate-50);
             color: var(--slate-700);
             line-height: 1.6;
         }
-
-        /* ---------- Dashboard Layout (sidebar) ---------- */
         .dashboard-layout {
             display: flex;
             min-height: 100vh;
         }
-
         .sidebar {
             width: 280px;
             background: var(--white);
@@ -61,19 +56,16 @@
             transition: transform 0.3s ease;
             z-index: 1000;
         }
-
         .sidebar-header {
             padding: 2rem 1.5rem;
             border-bottom: 1px solid var(--slate-200);
         }
-
         .sidebar-header .logo {
             display: flex;
             align-items: center;
             gap: 0.75rem;
             text-decoration: none;
         }
-
         .logo-icon {
             width: 44px;
             height: 44px;
@@ -84,20 +76,17 @@
             justify-content: center;
             color: var(--white);
         }
-
         .logo-text {
             display: flex;
             flex-direction: column;
             line-height: 1.2;
         }
-
         .logo-title {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--slate-900);
         }
-
         .logo-sub {
             font-size: 0.7rem;
             font-weight: 600;
@@ -105,11 +94,9 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
-
         .sidebar-nav {
             padding: 1.5rem;
         }
-
         .nav-item {
             display: flex;
             align-items: center;
@@ -121,41 +108,32 @@
             text-decoration: none;
             transition: all 0.2s;
         }
-
         .nav-item:hover {
             background: var(--slate-100);
             color: var(--orange);
         }
-
         .nav-item.active {
             background: var(--orange);
             color: white;
         }
-
         .nav-item i {
             width: 20px;
             height: 20px;
         }
-
-        /* Main Content */
         .main-content {
             flex: 1;
             margin-left: 280px;
             padding: 2rem;
         }
-
-        /* County Search */
         .county-search-container {
             margin-bottom: 2rem;
         }
-
         .county-search-container label {
             font-weight: 600;
             display: block;
             margin-bottom: 0.5rem;
             color: var(--slate-700);
         }
-
         .county-search {
             width: 100%;
             max-width: 400px;
@@ -165,7 +143,6 @@
             font-size: 1rem;
             margin-bottom: 0.5rem;
         }
-
         .county-select {
             width: 100%;
             max-width: 400px;
@@ -175,13 +152,9 @@
             font-size: 1rem;
             background: white;
         }
-
-        /* Weather Widget */
         .weather-container {
             margin-top: 1rem;
         }
-
-        /* Loading Spinner */
         .spinner {
             border: 4px solid var(--slate-200);
             border-top: 4px solid var(--orange);
@@ -195,8 +168,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        /* Current Weather Card */
         .current-weather {
             background: linear-gradient(135deg, var(--slate-800), var(--slate-900));
             border-radius: 1.5rem;
@@ -248,12 +219,6 @@
             align-items: center;
             gap: 0.5rem;
         }
-        .detail-item i {
-            width: 20px;
-            height: 20px;
-        }
-
-        /* Forecast Cards */
         .forecast-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -292,8 +257,6 @@
             color: var(--slate-500);
             margin-left: 0.25rem;
         }
-
-        /* Error message */
         .error-message {
             background: #fee2e2;
             color: #991b1b;
@@ -301,8 +264,6 @@
             border-radius: 0.75rem;
             margin: 1rem 0;
         }
-
-        /* Responsive */
         .menu-toggle-dashboard {
             display: none;
             background: var(--orange);
@@ -312,7 +273,6 @@
             border-radius: 0.5rem;
             cursor: pointer;
         }
-
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -373,7 +333,6 @@
             <button class="menu-toggle-dashboard" id="menuToggle">☰ Menu</button>
         </div>
 
-        <!-- County Selection -->
         <div class="county-search-container">
             <label for="countySearch">Your County</label>
             <input type="text" id="countySearch" class="county-search" placeholder="Type to search county...">
@@ -382,16 +341,165 @@
             </select>
         </div>
 
-        <!-- Weather Display -->
-        <div class="weather-container" id="weatherContainer">
+        <div id="weatherContainer" class="weather-container">
             <div class="spinner"></div>
         </div>
     </main>
 </div>
 
-<script src="dashboard.js"></script>
 <script>
-    // List of all 47 counties in Kenya
+    // ============================================
+    // OpenWeatherMap API Key – REPLACE WITH YOUR KEY
+    // ============================================
+    const WEATHER_API_KEY = '3718844e76e32727eb66f5a14fa67841'; // <-- Put your key here
+
+    function showNotification(type, message) {
+        const oldNotif = document.querySelector('.notification-toast');
+        if (oldNotif) oldNotif.remove();
+        const notif = document.createElement('div');
+        notif.className = `notification-toast ${type}`;
+        notif.innerHTML = `<div class="notification-content"><span class="notification-icon">${type === 'success' ? '✓' : '⚠'}</span><span class="notification-message">${message}</span></div>`;
+        document.body.appendChild(notif);
+        setTimeout(() => notif.classList.add('show'), 10);
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => notif.remove(), 300);
+        }, 5000);
+    }
+
+    function formatDay(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' });
+    }
+
+    async function fetchWeather(county) {
+        const container = document.getElementById('weatherContainer');
+        if (!container) return;
+
+        if (!WEATHER_API_KEY || WEATHER_API_KEY === 'YOUR_OPENWEATHER_API_KEY') {
+            container.innerHTML = '<div class="error-message">⚠️ Weather API key missing. Please add your OpenWeatherMap API key in dashboard.js.</div>';
+            return;
+        }
+
+        const city = county.trim();
+        const url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&units=metric&appid=${WEATHER_API_KEY}`;
+
+        container.innerHTML = '<div class="spinner"></div>';
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Weather API error');
+            }
+            const data = await response.json();
+
+            const current = data.list[0];
+            const currentTemp = Math.round(current.main.temp);
+            const feelsLike = Math.round(current.main.feels_like);
+            const humidity = current.main.humidity;
+            const windSpeed = current.wind.speed;
+            const description = current.weather[0].description;
+            const icon = `https://openweathermap.org/img/wn/${current.weather[0].icon}@4x.png`;
+
+            const daily = {};
+            data.list.forEach(item => {
+                const date = item.dt_txt.split(' ')[0];
+                if (!daily[date]) {
+                    daily[date] = item;
+                }
+            });
+            const forecastArray = Object.values(daily).slice(1, 8);
+
+            let html = `
+                <div class="current-weather">
+                    <div class="location">${city}</div>
+                    <div class="weather-main">
+                        <div class="temp">${currentTemp}°C</div>
+                        <div class="weather-icon"><img src="${icon}" alt="${description}"></div>
+                    </div>
+                    <div class="description">${description}</div>
+                    <div class="details">
+                        <div class="detail-item"><i data-lucide="thermometer"></i> Feels like ${feelsLike}°C</div>
+                        <div class="detail-item"><i data-lucide="droplet"></i> Humidity ${humidity}%</div>
+                        <div class="detail-item"><i data-lucide="wind"></i> Wind ${windSpeed} m/s</div>
+                    </div>
+                </div>
+                <h3 style="margin: 2rem 0 1rem;">7-Day Forecast</h3>
+                <div class="forecast-grid">
+            `;
+
+            forecastArray.forEach(day => {
+                const dayName = formatDay(day.dt_txt.split(' ')[0]);
+                const tempHigh = Math.round(day.main.temp_max);
+                const tempLow = Math.round(day.main.temp_min);
+                const iconCode = day.weather[0].icon;
+                const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+                html += `
+                    <div class="forecast-card">
+                        <div class="forecast-day">${dayName}</div>
+                        <div class="forecast-icon"><img src="${iconUrl}" alt=""></div>
+                        <div class="forecast-temp">
+                            <span class="forecast-temp-high">${tempHigh}°</span>
+                            <span class="forecast-temp-low">${tempLow}°</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        } catch (error) {
+            console.error(error);
+            container.innerHTML = `<div class="error-message">⚠️ Could not fetch weather for "${city}". Please check the county name or your API key.</div>`;
+        }
+    }
+
+    auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+            window.location.href = "index.html";
+            return;
+        }
+
+        const userNameSpan = document.getElementById('userName');
+        if (userNameSpan) userNameSpan.textContent = user.displayName || 'Farmer';
+
+        const userRef = db.collection('users').doc(user.uid);
+        const doc = await userRef.get();
+
+        if (!doc.exists) {
+            await userRef.set({
+                name: user.displayName,
+                email: user.email,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                county: null
+            });
+            const container = document.getElementById('weatherContainer');
+            if (container) container.innerHTML = '<div class="error-message">Please select your county above to see the forecast.</div>';
+        } else {
+            const savedCounty = doc.data().county;
+            const countySelect = document.getElementById('countySelect');
+            if (savedCounty && countySelect) {
+                countySelect.value = savedCounty;
+                fetchWeather(savedCounty);
+            } else if (countySelect) {
+                const container = document.getElementById('weatherContainer');
+                if (container) container.innerHTML = '<div class="error-message">Select your county above to see the forecast.</div>';
+            }
+        }
+
+        const countySelect = document.getElementById('countySelect');
+        if (countySelect) {
+            countySelect.addEventListener('change', async (e) => {
+                const county = e.target.value;
+                if (!county) return;
+                await userRef.update({ county: county });
+                fetchWeather(county);
+            });
+        }
+    });
+
+    // ==================== COUNTY SELECTOR ====================
     const counties = [
         "Mombasa", "Kwale", "Kilifi", "Tana River", "Lamu", "Taita Taveta",
         "Garissa", "Wajir", "Mandera", "Marsabit", "Isiolo", "Meru", "Tharaka Nithi",
@@ -402,7 +510,6 @@
         "Busia", "Siaya", "Kisumu", "Homa Bay", "Migori", "Kisii", "Nyamira", "Nairobi"
     ];
 
-    // Populate the search and select elements
     const countySearch = document.getElementById('countySearch');
     const countySelect = document.getElementById('countySelect');
 
@@ -422,18 +529,13 @@
     }
 
     renderCountyOptions();
-
-    countySearch.addEventListener('input', (e) => {
-        renderCountyOptions(e.target.value);
-    });
+    countySearch.addEventListener('input', (e) => renderCountyOptions(e.target.value));
 
     // Sidebar toggle
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
     if (menuToggle) {
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-        });
+        menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
     }
 
     // Logout
@@ -441,9 +543,6 @@
         e.preventDefault();
         auth.signOut().then(() => window.location.href = "index.html");
     });
-
-    // Lucide icons
-    lucide.createIcons();
 </script>
 </body>
 </html>
