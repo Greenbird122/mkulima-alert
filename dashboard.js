@@ -1,7 +1,7 @@
 // ============================================
 // OpenWeatherMap API Key – REPLACE WITH YOUR KEY
 // ============================================
-const WEATHER_API_KEY = '448db4ca858db5dddfefff8bf17c8030'; // <-- Put your key here
+const WEATHER_API_KEY = '3718844e76e32727eb66f5a14fa67841'; // <-- Put your key here
 
 // Helper: show notification (reuse from earlier)
 function showNotification(type, message) {
