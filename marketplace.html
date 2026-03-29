@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Mkulima Alert - Marketplace</title>
-    <!-- Standard favicon -->
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<!-- For modern browsers (PNG) -->
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<!-- Apple touch icon (for iOS home screen) -->
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -58,7 +57,6 @@
             min-height: 100vh;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 280px;
             background: var(--white);
@@ -220,7 +218,30 @@
             transform: scale(1.02);
         }
 
-        /* Marketplace Grid */
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .filter-btn {
+            background: var(--slate-100);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .filter-btn.active {
+            background: var(--orange);
+            color: white;
+        }
+        .filter-btn:hover:not(.active) {
+            background: var(--slate-200);
+        }
+
+        /* Listings Grid */
         .listings-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -391,7 +412,7 @@
             <button class="menu-toggle-dashboard" id="menuToggle">☰ Menu</button>
         </div>
 
-        <!-- Form (exactly as you requested) -->
+        <!-- Form -->
         <div class="card">
             <h2>List a Product</h2>
             <form id="productForm">
@@ -417,6 +438,12 @@
             </form>
         </div>
 
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button id="showAllBtn" class="filter-btn active">All Products</button>
+            <button id="showMyBtn" class="filter-btn">My Products</button>
+        </div>
+
         <!-- Listings Grid -->
         <div class="listings-grid" id="listingsGrid"></div>
     </main>
@@ -437,8 +464,7 @@
         e.preventDefault();
         auth.signOut().then(() => window.location.href = "index.html");
     });
-    // Lucide icons
-    lucide.createIcons();
+    // Lucide icons (font icons only, no JS needed)
 </script>
 </body>
 </html>
