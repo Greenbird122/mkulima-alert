@@ -1,7 +1,7 @@
 // ============================================
 // OpenWeatherMap API Key – REPLACE WITH YOUR KEY
 // ============================================
-const WEATHER_API_KEY = 'YOUR_OPENWEATHER_API_KEY'; // <-- Put your key here
+const WEATHER_API_KEY = '448db4ca858db5dddfefff8bf17c8030'; // <-- Put your key here
 
 // Helper: show notification (reuse from earlier)
 function showNotification(type, message) {
@@ -29,7 +29,7 @@ async function fetchWeather(county) {
     const container = document.getElementById('weatherContainer');
     if (!container) return;
 
-    if (!WEATHER_API_KEY || WEATHER_API_KEY === 'YOUR_OPENWEATHER_API_KEY') {
+    if (!WEATHER_API_KEY || WEATHER_API_KEY === '448db4ca858db5dddfefff8bf17c8030') {
         container.innerHTML = '<div class="error-message">⚠️ Weather API key missing. Please add your OpenWeatherMap API key in dashboard.js.</div>';
         return;
     }
