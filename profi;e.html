@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Mkulima Alert - My Profile</title>
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/font/lucide.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        /* ---------- Global Variables (same as other pages) ---------- */
+        :root {
+            --orange: #f97316;
+            --emerald: #10b981;
+            --blue: #0ea5e9;
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748b;
+            --slate-400: #94a3b8;
+            --slate-300: #cbd5e1;
+            --slate-200: #e2e8f0;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--slate-50);
+            color: var(--slate-700);
+            line-height: 1.6;
+        }
+
+        /* Dashboard Layout */
+        .dashboard-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            border-right: 1px solid var(--slate-200);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid var(--slate-200);
+        }
+
+        .sidebar-header .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--emerald) 0%, var(--blue) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .logo-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--slate-900);
+        }
+
+        .logo-sub {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--emerald);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            color: var(--slate-700);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background: var(--slate-100);
+            color: var(--orange);
+        }
+
+        .nav-item.active {
+            background: var(--orange);
+            color: white;
+        }
+
+        .nav-item i {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        /* Profile Form */
+        .profile-card {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .profile-card h2 {
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--slate-700);
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--slate-200);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--orange);
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #ea580c;
+            transform: scale(1.02);
+        }
+
+        /* County Search */
+        .county-search {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--slate-200);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .county-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--slate-200);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            background: white;
+        }
+
+        /* Notification Toast */
+        .notification-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        .notification-toast.show {
+            transform: translateX(0);
+        }
+        .notification-content {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 280px;
+            border-left: 4px solid;
+        }
+        .notification-toast.success .notification-content {
+            border-left-color: var(--emerald);
+        }
+        .notification-toast.error .notification-content {
+            border-left-color: #ef4444;
+        }
+        .notification-icon {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .notification-toast.success .notification-icon {
+            color: var(--emerald);
+        }
+        .notification-toast.error .notification-icon {
+            color: #ef4444;
+        }
+        .notification-message {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #1f2937;
+        }
+
+        /* Mobile */
+        .menu-toggle-dashboard {
+            display: none;
+            background: var(--orange);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            .menu-toggle-dashboard {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="logo">
+                <div class="logo-icon"><i data-lucide="cloud-sun"></i></div>
+                <div class="logo-text">
+                    <span class="logo-title">Mkulima Alert</span>
+                    <span class="logo-sub">Climate Smart</span>
+                </div>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item"><i data-lucide="cloud-sun"></i> Weather</a>
+            <a href="marketplace.html" class="nav-item"><i data-lucide="shopping-cart"></i> Marketplace</a>
+            <a href="forum.html" class="nav-item"><i data-lucide="message-square"></i> Forum</a>
+            <a href="consultation.html" class="nav-item"><i data-lucide="phone-call"></i> Consultation</a>
+            <a href="profile.html" class="nav-item active"><i data-lucide="user"></i> My Profile</a>
+            <a href="#" class="nav-item" id="logoutBtn"><i data-lucide="log-out"></i> Logout</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <h1>My Profile</h1>
+            <button class="menu-toggle-dashboard" id="menuToggle">☰ Menu</button>
+        </div>
+
+        <div class="profile-card" id="profileCard">
+            <!-- Will be populated by JavaScript -->
+            <div class="spinner" style="text-align:center; margin:2rem;">Loading profile...</div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Helper: show notification
+    function showNotification(type, message) {
+        const oldNotif = document.querySelector('.notification-toast');
+        if (oldNotif) oldNotif.remove();
+        const notif = document.createElement('div');
+        notif.className = `notification-toast ${type}`;
+        notif.innerHTML = `<div class="notification-content"><span class="notification-icon">${type === 'success' ? '✓' : '⚠'}</span><span class="notification-message">${message}</span></div>`;
+        document.body.appendChild(notif);
+        setTimeout(() => notif.classList.add('show'), 10);
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => notif.remove(), 300);
+        }, 5000);
+    }
+
+    // Escape HTML
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // All counties (same as dashboard)
+    const counties = [
+        "Mombasa", "Kwale", "Kilifi", "Tana River", "Lamu", "Taita Taveta",
+        "Garissa", "Wajir", "Mandera", "Marsabit", "Isiolo", "Meru", "Tharaka Nithi",
+        "Embu", "Kitui", "Machakos", "Makueni", "Nyandarua", "Nyeri", "Kirinyaga",
+        "Murang'a", "Kiambu", "Turkana", "West Pokot", "Samburu", "Trans Nzoia",
+        "Uasin Gishu", "Elgeyo Marakwet", "Nandi", "Baringo", "Laikipia", "Nakuru",
+        "Narok", "Kajiado", "Kericho", "Bomet", "Kakamega", "Vihiga", "Bungoma",
+        "Busia", "Siaya", "Kisumu", "Homa Bay", "Migori", "Kisii", "Nyamira", "Nairobi"
+    ];
+
+    let currentUser = null;
+    let currentProfile = null;
+
+    // Render the profile form
+    function renderProfileForm(profileData) {
+        const container = document.getElementById('profileCard');
+        container.innerHTML = `
+            <h2>Edit Profile</h2>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label>Display Name</label>
+                    <input type="text" id="displayName" value="${escapeHtml(profileData.name || '')}" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" value="${escapeHtml(profileData.email || '')}" disabled>
+                    <small style="color: var(--slate-500);">Email cannot be changed (linked to Google account).</small>
+                </div>
+                <div class="form-group">
+                    <label>County</label>
+                    <input type="text" id="countySearch" class="county-search" placeholder="Type to search county..." value="${escapeHtml(profileData.county || '')}">
+                    <select id="countySelect" class="county-select" size="5">
+                        <!-- populated -->
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        `;
+
+        // Populate county dropdown
+        const countySelect = document.getElementById('countySelect');
+        const countySearch = document.getElementById('countySearch');
+
+        function renderCountyOptions(filter = '') {
+            const filterLower = filter.toLowerCase();
+            const filtered = counties.filter(c => c.toLowerCase().includes(filterLower));
+            countySelect.innerHTML = '';
+            filtered.forEach(county => {
+                const option = document.createElement('option');
+                option.value = county;
+                option.textContent = county;
+                countySelect.appendChild(option);
+            });
+            if (filtered.length === 1 && filtered[0].toLowerCase() === filterLower) {
+                countySelect.value = filtered[0];
+            }
+        }
+
+        renderCountyOptions(profileData.county || '');
+
+        countySearch.addEventListener('input', (e) => {
+            renderCountyOptions(e.target.value);
+        });
+
+        // Handle form submission
+        const form = document.getElementById('profileForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newName = document.getElementById('displayName').value.trim();
+            const selectedCounty = countySelect.value;
+            if (!newName) {
+                showNotification('error', 'Name cannot be empty.');
+                return;
+            }
+            if (!selectedCounty) {
+                showNotification('error', 'Please select a county.');
+                return;
+            }
+
+            try {
+                // Update Firestore
+                const userRef = db.collection('users').doc(currentUser.uid);
+                await userRef.update({
+                    name: newName,
+                    county: selectedCounty,
+                    last_updated: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Update Firebase Auth display name if changed
+                if (currentUser.displayName !== newName) {
+                    await currentUser.updateProfile({ displayName: newName });
+                    // Force reload to reflect new name
+                    await currentUser.reload();
+                }
+
+                showNotification('success', 'Profile updated successfully!');
+                // Reload profile data (so the form updates with new values)
+                const updatedDoc = await userRef.get();
+                if (updatedDoc.exists) {
+                    renderProfileForm(updatedDoc.data());
+                }
+            } catch (error) {
+                console.error(error);
+                showNotification('error', 'Failed to update profile.');
+            }
+        });
+    }
+
+    // Authentication and data loading
+    auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+            window.location.href = "index.html";
+            return;
+        }
+        currentUser = user;
+
+        // Get user profile from Firestore
+        const userRef = db.collection('users').doc(user.uid);
+        const doc = await userRef.get();
+
+        if (!doc.exists) {
+            // If no profile exists, create one with default values
+            const defaultProfile = {
+                name: user.displayName || 'Farmer',
+                email: user.email,
+                county: null,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            await userRef.set(defaultProfile);
+            renderProfileForm(defaultProfile);
+        } else {
+            renderProfileForm(doc.data());
+        }
+    });
+
+    // Sidebar toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+    }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        auth.signOut().then(() => window.location.href = "index.html");
+    });
+</script>
+</body>
+</html>
