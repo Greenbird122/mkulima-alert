@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Mkulima Alert - Dashboard</title>
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,7 +20,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
     <style>
-        /* All styles remain exactly as in the previous version – no changes needed */
+        /* ---------- Global Variables ---------- */
         :root {
             --orange: #f97316;
             --emerald: #10b981;
@@ -31,21 +37,26 @@
             --slate-50: #f8fafc;
             --white: #ffffff;
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Inter', sans-serif;
             background: var(--slate-50);
             color: var(--slate-700);
             line-height: 1.6;
         }
+
+        /* Dashboard Layout */
         .dashboard-layout {
             display: flex;
             min-height: 100vh;
         }
+
         .sidebar {
             width: 280px;
             background: var(--white);
@@ -56,16 +67,19 @@
             transition: transform 0.3s ease;
             z-index: 1000;
         }
+
         .sidebar-header {
             padding: 2rem 1.5rem;
             border-bottom: 1px solid var(--slate-200);
         }
+
         .sidebar-header .logo {
             display: flex;
             align-items: center;
             gap: 0.75rem;
             text-decoration: none;
         }
+
         .logo-icon {
             width: 44px;
             height: 44px;
@@ -76,17 +90,20 @@
             justify-content: center;
             color: var(--white);
         }
+
         .logo-text {
             display: flex;
             flex-direction: column;
             line-height: 1.2;
         }
+
         .logo-title {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--slate-900);
         }
+
         .logo-sub {
             font-size: 0.7rem;
             font-weight: 600;
@@ -94,9 +111,11 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
+
         .sidebar-nav {
             padding: 1.5rem;
         }
+
         .nav-item {
             display: flex;
             align-items: center;
@@ -108,53 +127,63 @@
             text-decoration: none;
             transition: all 0.2s;
         }
+
         .nav-item:hover {
             background: var(--slate-100);
             color: var(--orange);
         }
+
         .nav-item.active {
             background: var(--orange);
             color: white;
         }
+
         .nav-item i {
             width: 20px;
             height: 20px;
         }
+
+        /* Main Content */
         .main-content {
             flex: 1;
             margin-left: 280px;
             padding: 2rem;
         }
-        .county-search-container {
-            margin-bottom: 2rem;
+
+        /* County Info */
+        .current-county-container {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
-        .county-search-container label {
+        .county-info {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .county-info .label {
             font-weight: 600;
-            display: block;
-            margin-bottom: 0.5rem;
             color: var(--slate-700);
         }
-        .county-search {
-            width: 100%;
-            max-width: 400px;
-            padding: 0.75rem;
-            border: 2px solid var(--slate-200);
-            border-radius: 0.75rem;
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
+        .county-name {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--slate-900);
         }
-        .county-select {
-            width: 100%;
-            max-width: 400px;
-            padding: 0.75rem;
-            border: 2px solid var(--slate-200);
-            border-radius: 0.75rem;
-            font-size: 1rem;
-            background: white;
+        .change-county-link {
+            color: var(--orange);
+            text-decoration: none;
+            font-size: 0.9rem;
         }
-        .weather-container {
-            margin-top: 1rem;
+        .change-county-link:hover {
+            text-decoration: underline;
         }
+
+        /* Weather Widget Styles (unchanged) */
         .spinner {
             border: 4px solid var(--slate-200);
             border-top: 4px solid var(--orange);
@@ -175,10 +204,6 @@
             margin-bottom: 2rem;
             color: white;
             box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-        }
-        .current-weather:hover {
-            transform: translateY(-2px);
         }
         .location {
             font-size: 1.5rem;
@@ -264,6 +289,53 @@
             border-radius: 0.75rem;
             margin: 1rem 0;
         }
+
+        /* Notification Toast */
+        .notification-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        .notification-toast.show {
+            transform: translateX(0);
+        }
+        .notification-content {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 280px;
+            border-left: 4px solid;
+        }
+        .notification-toast.success .notification-content {
+            border-left-color: var(--emerald);
+        }
+        .notification-toast.error .notification-content {
+            border-left-color: #ef4444;
+        }
+        .notification-icon {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .notification-toast.success .notification-icon {
+            color: var(--emerald);
+        }
+        .notification-toast.error .notification-icon {
+            color: #ef4444;
+        }
+        .notification-message {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #1f2937;
+        }
+
+        /* Mobile Responsiveness */
         .menu-toggle-dashboard {
             display: none;
             background: var(--orange);
@@ -273,6 +345,7 @@
             border-radius: 0.5rem;
             cursor: pointer;
         }
+
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -321,10 +394,12 @@
             <a href="consultation.html" class="nav-item">
                 <i data-lucide="phone-call"></i> Consultation
             </a>
+            <a href="profile.html" class="nav-item">
+                <i data-lucide="user"></i> My Profile
+            </a>
             <a href="#" class="nav-item" id="logoutBtn">
                 <i data-lucide="log-out"></i> Logout
             </a>
-            <a href="profile.html" class="nav-item"><i data-lucide="user"></i> My Profile</a>
         </nav>
     </aside>
 
@@ -334,209 +409,29 @@
             <button class="menu-toggle-dashboard" id="menuToggle">☰ Menu</button>
         </div>
 
-        <div class="county-search-container">
-            <label for="countySearch">Your County</label>
-            <input type="text" id="countySearch" class="county-search" placeholder="Type to search county...">
-            <select id="countySelect" class="county-select" size="5">
-                <!-- populated by JavaScript -->
-            </select>
-        </div>
-
-        <div id="weatherContainer" class="weather-container">
-            <div class="spinner"></div>
+        <!-- County Info -->
+        <div class="current-county-container">
+            <div class="county-info">
+                <span class="label">Your County:</span>
+                <span id="currentCountyDisplay" class="county-name">Loading...</span>
+                <a href="profile.html" class="change-county-link">Change</a>
+            </div>
+            <div id="weatherContainer" class="weather-container">
+                <div class="spinner"></div>
+            </div>
         </div>
     </main>
 </div>
 
+<script src="dashboard.js"></script>
 <script>
-    // ============================================
-    // OpenWeatherMap API Key – REPLACE WITH YOUR KEY
-    // ============================================
-    const WEATHER_API_KEY = '3718844e76e32727eb66f5a14fa67841'; // <-- Put your key here
-
-    function showNotification(type, message) {
-        const oldNotif = document.querySelector('.notification-toast');
-        if (oldNotif) oldNotif.remove();
-        const notif = document.createElement('div');
-        notif.className = `notification-toast ${type}`;
-        notif.innerHTML = `<div class="notification-content"><span class="notification-icon">${type === 'success' ? '✓' : '⚠'}</span><span class="notification-message">${message}</span></div>`;
-        document.body.appendChild(notif);
-        setTimeout(() => notif.classList.add('show'), 10);
-        setTimeout(() => {
-            notif.classList.remove('show');
-            setTimeout(() => notif.remove(), 300);
-        }, 5000);
-    }
-
-    function formatDay(dateStr) {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' });
-    }
-
-    async function fetchWeather(county) {
-        const container = document.getElementById('weatherContainer');
-        if (!container) return;
-
-        if (!WEATHER_API_KEY || WEATHER_API_KEY === 'YOUR_OPENWEATHER_API_KEY') {
-            container.innerHTML = '<div class="error-message">⚠️ Weather API key missing. Please add your OpenWeatherMap API key in dashboard.js.</div>';
-            return;
-        }
-
-        const city = county.trim();
-        const url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&units=metric&appid=${WEATHER_API_KEY}`;
-
-        container.innerHTML = '<div class="spinner"></div>';
-
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Weather API error');
-            }
-            const data = await response.json();
-
-            const current = data.list[0];
-            const currentTemp = Math.round(current.main.temp);
-            const feelsLike = Math.round(current.main.feels_like);
-            const humidity = current.main.humidity;
-            const windSpeed = current.wind.speed;
-            const description = current.weather[0].description;
-            const icon = `https://openweathermap.org/img/wn/${current.weather[0].icon}@4x.png`;
-
-            const daily = {};
-            data.list.forEach(item => {
-                const date = item.dt_txt.split(' ')[0];
-                if (!daily[date]) {
-                    daily[date] = item;
-                }
-            });
-            const forecastArray = Object.values(daily).slice(1, 8);
-
-            let html = `
-                <div class="current-weather">
-                    <div class="location">${city}</div>
-                    <div class="weather-main">
-                        <div class="temp">${currentTemp}°C</div>
-                        <div class="weather-icon"><img src="${icon}" alt="${description}"></div>
-                    </div>
-                    <div class="description">${description}</div>
-                    <div class="details">
-                        <div class="detail-item"><i data-lucide="thermometer"></i> Feels like ${feelsLike}°C</div>
-                        <div class="detail-item"><i data-lucide="droplet"></i> Humidity ${humidity}%</div>
-                        <div class="detail-item"><i data-lucide="wind"></i> Wind ${windSpeed} m/s</div>
-                    </div>
-                </div>
-                <h3 style="margin: 2rem 0 1rem;">7-Day Forecast</h3>
-                <div class="forecast-grid">
-            `;
-
-            forecastArray.forEach(day => {
-                const dayName = formatDay(day.dt_txt.split(' ')[0]);
-                const tempHigh = Math.round(day.main.temp_max);
-                const tempLow = Math.round(day.main.temp_min);
-                const iconCode = day.weather[0].icon;
-                const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-                html += `
-                    <div class="forecast-card">
-                        <div class="forecast-day">${dayName}</div>
-                        <div class="forecast-icon"><img src="${iconUrl}" alt=""></div>
-                        <div class="forecast-temp">
-                            <span class="forecast-temp-high">${tempHigh}°</span>
-                            <span class="forecast-temp-low">${tempLow}°</span>
-                        </div>
-                    </div>
-                `;
-            });
-
-            html += `</div>`;
-            container.innerHTML = html;
-        } catch (error) {
-            console.error(error);
-            container.innerHTML = `<div class="error-message">⚠️ Could not fetch weather for "${city}". Please check the county name or your API key.</div>`;
-        }
-    }
-
-    auth.onAuthStateChanged(async (user) => {
-        if (!user) {
-            window.location.href = "index.html";
-            return;
-        }
-
-        const userNameSpan = document.getElementById('userName');
-        if (userNameSpan) userNameSpan.textContent = user.displayName || 'Farmer';
-
-        const userRef = db.collection('users').doc(user.uid);
-        const doc = await userRef.get();
-
-        if (!doc.exists) {
-            await userRef.set({
-                name: user.displayName,
-                email: user.email,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                county: null
-            });
-            const container = document.getElementById('weatherContainer');
-            if (container) container.innerHTML = '<div class="error-message">Please select your county above to see the forecast.</div>';
-        } else {
-            const savedCounty = doc.data().county;
-            const countySelect = document.getElementById('countySelect');
-            if (savedCounty && countySelect) {
-                countySelect.value = savedCounty;
-                fetchWeather(savedCounty);
-            } else if (countySelect) {
-                const container = document.getElementById('weatherContainer');
-                if (container) container.innerHTML = '<div class="error-message">Select your county above to see the forecast.</div>';
-            }
-        }
-
-        const countySelect = document.getElementById('countySelect');
-        if (countySelect) {
-            countySelect.addEventListener('change', async (e) => {
-                const county = e.target.value;
-                if (!county) return;
-                await userRef.update({ county: county });
-                fetchWeather(county);
-            });
-        }
-    });
-
-    // ==================== COUNTY SELECTOR ====================
-    const counties = [
-        "Mombasa", "Kwale", "Kilifi", "Tana River", "Lamu", "Taita Taveta",
-        "Garissa", "Wajir", "Mandera", "Marsabit", "Isiolo", "Meru", "Tharaka Nithi",
-        "Embu", "Kitui", "Machakos", "Makueni", "Nyandarua", "Nyeri", "Kirinyaga",
-        "Murang'a", "Kiambu", "Turkana", "West Pokot", "Samburu", "Trans Nzoia",
-        "Uasin Gishu", "Elgeyo Marakwet", "Nandi", "Baringo", "Laikipia", "Nakuru",
-        "Narok", "Kajiado", "Kericho", "Bomet", "Kakamega", "Vihiga", "Bungoma",
-        "Busia", "Siaya", "Kisumu", "Homa Bay", "Migori", "Kisii", "Nyamira", "Nairobi"
-    ];
-
-    const countySearch = document.getElementById('countySearch');
-    const countySelect = document.getElementById('countySelect');
-
-    function renderCountyOptions(filter = '') {
-        const filterLower = filter.toLowerCase();
-        const filtered = counties.filter(c => c.toLowerCase().includes(filterLower));
-        countySelect.innerHTML = '';
-        filtered.forEach(county => {
-            const option = document.createElement('option');
-            option.value = county;
-            option.textContent = county;
-            countySelect.appendChild(option);
-        });
-        if (filtered.length === 1 && filtered[0].toLowerCase() === filterLower) {
-            countySelect.value = filtered[0];
-        }
-    }
-
-    renderCountyOptions();
-    countySearch.addEventListener('input', (e) => renderCountyOptions(e.target.value));
-
     // Sidebar toggle
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
     if (menuToggle) {
-        menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
     }
 
     // Logout
