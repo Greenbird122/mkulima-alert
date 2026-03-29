@@ -102,7 +102,7 @@ async function fetchWeather(county) {
 
         html += `</div>`;
         container.innerHTML = html;
-        // No lucide.createIcons() – using font icons only
+        // No lucide.createIcons() – the font handles the icons.
     } catch (error) {
         console.error(error);
         container.innerHTML = `<div class="error-message">⚠️ Could not fetch weather for "${city}". Please check your county in profile.</div>`;
