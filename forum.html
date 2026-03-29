@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Mkulima Alert - Forum</title>
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -144,17 +150,17 @@
             padding: 2rem;
         }
 
-        /* Forum Specific */
+        /* Category Tabs (like filter tabs in marketplace) */
         .category-list {
             display: flex;
-            gap: 0.75rem;
+            gap: 1rem;
             flex-wrap: wrap;
             margin-bottom: 2rem;
         }
         .category-btn {
-            padding: 0.5rem 1.25rem;
-            background: var(--white);
-            border: 2px solid var(--slate-200);
+            background: var(--slate-100);
+            border: none;
+            padding: 0.5rem 1rem;
             border-radius: 2rem;
             cursor: pointer;
             font-weight: 500;
@@ -162,12 +168,12 @@
         }
         .category-btn.active {
             background: var(--orange);
-            border-color: var(--orange);
             color: white;
         }
-        .category-btn:hover {
-            border-color: var(--orange);
+        .category-btn:hover:not(.active) {
+            background: var(--slate-200);
         }
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -187,21 +193,32 @@
             background: #ea580c;
             transform: scale(1.02);
         }
-        .topic-list {
+
+        /* Topics Grid (matching marketplace grid) */
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
             margin-top: 1.5rem;
         }
+
         .topic-card {
             background: var(--white);
             border-radius: 1rem;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             transition: transform 0.2s;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
         }
         .topic-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1);
+        }
+        .topic-card .content {
+            padding: 1rem;
+            flex: 1;
         }
         .topic-title {
             font-size: 1.2rem;
@@ -220,8 +237,8 @@
         }
         .topic-footer {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: flex-end;
+            margin-top: 0.5rem;
         }
         .delete-topic {
             background: #ef4444;
@@ -236,7 +253,7 @@
             background: #dc2626;
         }
 
-        /* Modal */
+        /* Modal (unchanged) */
         .modal {
             display: none;
             position: fixed;
@@ -333,7 +350,7 @@
             color: #1f2937;
         }
 
-        /* Mobile */
+        /* Mobile Responsiveness */
         .menu-toggle-dashboard {
             display: none;
             background: var(--orange);
@@ -373,21 +390,11 @@
             </a>
         </div>
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item">
-                <i data-lucide="cloud-sun"></i> Weather
-            </a>
-            <a href="marketplace.html" class="nav-item">
-                <i data-lucide="shopping-cart"></i> Marketplace
-            </a>
-            <a href="forum.html" class="nav-item active">
-                <i data-lucide="message-square"></i> Forum
-            </a>
-            <a href="consultation.html" class="nav-item">
-                <i data-lucide="phone-call"></i> Consultation
-            </a>
-            <a href="#" class="nav-item" id="logoutBtn">
-                <i data-lucide="log-out"></i> Logout
-            </a>
+            <a href="dashboard.html" class="nav-item"><i data-lucide="cloud-sun"></i> Weather</a>
+            <a href="marketplace.html" class="nav-item"><i data-lucide="shopping-cart"></i> Marketplace</a>
+            <a href="forum.html" class="nav-item active"><i data-lucide="message-square"></i> Forum</a>
+            <a href="consultation.html" class="nav-item"><i data-lucide="phone-call"></i> Consultation</a>
+            <a href="#" class="nav-item" id="logoutBtn"><i data-lucide="log-out"></i> Logout</a>
         </nav>
     </aside>
 
@@ -399,11 +406,11 @@
 
         <div class="category-list" id="categoryList"></div>
         <button id="newTopicBtn" class="btn btn-primary">+ Start New Topic</button>
-        <div id="topicsList" class="topic-list"></div>
+        <div id="topicsList" class="topics-grid"></div>
     </main>
 </div>
 
-<!-- Modal -->
+<!-- Modal (unchanged) -->
 <div id="newTopicModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" id="closeModalBtn">&times;</span>
@@ -411,9 +418,7 @@
         <form id="newTopicForm">
             <div class="form-group">
                 <label>Category</label>
-                <select id="topicCategory" required>
-                    <!-- populated by JS -->
-                </select>
+                <select id="topicCategory" required></select>
             </div>
             <div class="form-group">
                 <label>Title</label>
@@ -429,12 +434,11 @@
 </div>
 
 <script>
-    // ==================== FORUM CODE ====================
+    // ==================== FORUM CODE (Grid Version) ====================
     const categories = ['Crops', 'Pests', 'Weather', 'General', 'Livestock'];
     let currentCategory = 'Crops';
     let currentUser = null;
 
-    // Helper: show notification
     function showNotification(type, message) {
         const oldNotif = document.querySelector('.notification-toast');
         if (oldNotif) oldNotif.remove();
@@ -449,7 +453,6 @@
         }, 5000);
     }
 
-    // Escape HTML to prevent XSS
     function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, function(m) {
@@ -460,14 +463,12 @@
         });
     }
 
-    // Format date
     function formatDate(timestamp) {
         if (!timestamp) return 'Just now';
         const date = timestamp.toDate();
         return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
-    // Render category buttons
     function renderCategories() {
         const container = document.getElementById('categoryList');
         container.innerHTML = '';
@@ -484,7 +485,6 @@
         });
     }
 
-    // Load topics from Firestore
     let unsubscribeTopics = null;
     function loadTopics() {
         if (unsubscribeTopics) unsubscribeTopics();
@@ -492,22 +492,27 @@
             .where('category', '==', currentCategory)
             .orderBy('createdAt', 'desc')
             .onSnapshot(snapshot => {
-                const topicsDiv = document.getElementById('topicsList');
-                topicsDiv.innerHTML = '';
+                const container = document.getElementById('topicsList');
+                container.innerHTML = '';
+                if (snapshot.empty) {
+                    container.innerHTML = '<p style="text-align:center; color:var(--slate-500);">No topics in this category yet. Start one!</p>';
+                    return;
+                }
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    const topicDiv = document.createElement('div');
-                    topicDiv.className = 'topic-card';
-                    topicDiv.innerHTML = `
-                        <div class="topic-title">${escapeHtml(data.title)}</div>
-                        <div class="topic-meta">By ${escapeHtml(data.userName)} · ${formatDate(data.createdAt)}</div>
-                        <div class="topic-preview">${escapeHtml(data.content.substring(0, 150))}${data.content.length > 150 ? '...' : ''}</div>
-                        <div class="topic-footer">
-                            <span></span>
-                            ${data.userId === currentUser?.uid ? `<button class="delete-topic" data-id="${doc.id}">Delete</button>` : ''}
+                    const card = document.createElement('div');
+                    card.className = 'topic-card';
+                    card.innerHTML = `
+                        <div class="content">
+                            <div class="topic-title">${escapeHtml(data.title)}</div>
+                            <div class="topic-meta">By ${escapeHtml(data.userName)} · ${formatDate(data.createdAt)}</div>
+                            <div class="topic-preview">${escapeHtml(data.content.substring(0, 120))}${data.content.length > 120 ? '...' : ''}</div>
+                            <div class="topic-footer">
+                                ${data.userId === currentUser?.uid ? `<button class="delete-topic" data-id="${doc.id}">Delete</button>` : ''}
+                            </div>
                         </div>
                     `;
-                    topicsDiv.appendChild(topicDiv);
+                    container.appendChild(card);
                 });
 
                 // Attach delete listeners
@@ -532,7 +537,6 @@
             });
     }
 
-    // Open modal
     function openModal() {
         const modal = document.getElementById('newTopicModal');
         const categorySelect = document.getElementById('topicCategory');
@@ -551,7 +555,6 @@
         document.getElementById('newTopicModal').style.display = 'none';
     }
 
-    // Submit new topic
     document.getElementById('newTopicForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!currentUser) return;
@@ -583,7 +586,6 @@
         }
     });
 
-    // Authentication
     auth.onAuthStateChanged(async (user) => {
         if (!user) {
             window.location.href = "index.html";
@@ -592,10 +594,6 @@
         currentUser = user;
         renderCategories();
         loadTopics();
-
-        // Display user name in header
-        const userNameSpan = document.getElementById('userName');
-        if (userNameSpan) userNameSpan.textContent = user.displayName || 'Farmer';
     });
 
     // Sidebar toggle
@@ -607,22 +605,17 @@
         });
     }
 
-    // Logout
     document.getElementById('logoutBtn').addEventListener('click', (e) => {
         e.preventDefault();
         auth.signOut().then(() => window.location.href = "index.html");
     });
 
-    // Modal open/close
     document.getElementById('newTopicBtn').addEventListener('click', openModal);
     document.getElementById('closeModalBtn').addEventListener('click', closeModal);
     window.addEventListener('click', (e) => {
         const modal = document.getElementById('newTopicModal');
         if (e.target === modal) closeModal();
     });
-
-    // Lucide icons
-    lucide.createIcons();
 </script>
 </body>
 </html>
