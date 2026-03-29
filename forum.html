@@ -527,11 +527,11 @@
                     });
                 });
 
-                // Click on topic card to view details (future: replies page)
-                document.querySelectorAll('.topic-card').forEach((card, index) => {
-                    card.addEventListener('click', () => {
+               // Click on topic card to view details
+                        document.querySelectorAll('.topic-card').forEach((card, index) => {
+                        card.addEventListener('click', () => {
                         const topicId = snapshot.docs[index].id;
-                        alert('Topic details page coming soon! (topic ID: ' + topicId + ')');
+                        window.location.href = `topic.html?id=${topicId}`;
                     });
                 });
             });
