@@ -4,27 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Mkulima Alert | Climate-Smart SMS for Kenyan Farmers</title>
-<!-- Standard favicon -->
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<!-- For modern browsers (PNG) -->
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<!-- Apple touch icon (for iOS home screen) -->
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/font/lucide.css">
     <link rel="stylesheet" href="style.css">
-
-   <!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-<!-- Your config -->
-<script src="firebase-config.js"></script>
-
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
 </head>
 <body>
   <!-- Navigation -->
@@ -50,7 +45,7 @@
     </div>
   </nav>
 
-  <!-- Mobile Menu -->
+  <!-- Mobile Menu (FIXED: Added Sign in button) -->
   <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
   <div class="mobile-menu" id="mobileMenu">
     <button class="close-btn" onclick="closeMobileMenu()"><i data-lucide="x" style="width:24px;height:24px"></i></button>
@@ -62,6 +57,7 @@
     <a class="mobile-nav-link" onclick="scrollToSection('tech'); closeMobileMenu();"><i data-lucide="cpu"></i> Technology</a>
     <a class="mobile-nav-link" onclick="scrollToSection('contact'); closeMobileMenu();"><i data-lucide="mail"></i> Contact</a>
     <button class="mobile-btn btn-primary" onclick="openModal('signup'); closeMobileMenu();">Get Started</button>
+    <button class="mobile-btn btn-outline" onclick="loginWithGoogle(); closeMobileMenu();">Sign in</button>
   </div>
 
   <!-- Hero -->
