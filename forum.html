@@ -2,40 +2,361 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Mkulima Alert - Forum</title>
-    <!-- Standard favicon -->
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<!-- For modern browsers (PNG) -->
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<!-- Apple touch icon (for iOS home screen) -->
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    
-    <!-- same meta, fonts, CSS, Firebase SDKs as above -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/font/lucide.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="dashboard.css">
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
     <style>
-        /* forum-specific styles (optional) */
-        .topic-card {
-            background: white;
-            border-radius: 0.75rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            cursor: pointer;
+        /* ---------- Global Variables ---------- */
+        :root {
+            --orange: #f97316;
+            --emerald: #10b981;
+            --blue: #0ea5e9;
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748b;
+            --slate-400: #94a3b8;
+            --slate-300: #cbd5e1;
+            --slate-200: #e2e8f0;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--slate-50);
+            color: var(--slate-700);
+            line-height: 1.6;
+        }
+
+        /* ---------- Dashboard Layout ---------- */
+        .dashboard-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            border-right: 1px solid var(--slate-200);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid var(--slate-200);
+        }
+
+        .sidebar-header .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--emerald) 0%, var(--blue) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .logo-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--slate-900);
+        }
+
+        .logo-sub {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--emerald);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            color: var(--slate-700);
+            text-decoration: none;
             transition: all 0.2s;
         }
+
+        .nav-item:hover {
+            background: var(--slate-100);
+            color: var(--orange);
+        }
+
+        .nav-item.active {
+            background: var(--orange);
+            color: white;
+        }
+
+        .nav-item i {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        /* Forum Specific */
+        .category-list {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .category-btn {
+            padding: 0.5rem 1.25rem;
+            background: var(--white);
+            border: 2px solid var(--slate-200);
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .category-btn.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: white;
+        }
+        .category-btn:hover {
+            border-color: var(--orange);
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #ea580c;
+            transform: scale(1.02);
+        }
+        .topic-list {
+            margin-top: 1.5rem;
+        }
+        .topic-card {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
         .topic-card:hover {
-            background: var(--slate-50);
-            transform: translateX(4px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .topic-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--slate-900);
+            margin-bottom: 0.5rem;
+        }
+        .topic-meta {
+            font-size: 0.8rem;
+            color: var(--slate-500);
+            margin-bottom: 0.75rem;
+        }
+        .topic-preview {
+            color: var(--slate-600);
+            margin-bottom: 0.75rem;
+        }
+        .topic-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .delete-topic {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .delete-topic:hover {
+            background: #dc2626;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--slate-500);
+        }
+        .modal-content h2 {
+            margin-bottom: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--slate-200);
+            border-radius: 0.75rem;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--orange);
+        }
+
+        /* Notification Toast */
+        .notification-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        .notification-toast.show {
+            transform: translateX(0);
+        }
+        .notification-content {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 280px;
+            border-left: 4px solid;
+        }
+        .notification-toast.success .notification-content {
+            border-left-color: var(--emerald);
+        }
+        .notification-toast.error .notification-content {
+            border-left-color: #ef4444;
+        }
+        .notification-icon {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .notification-toast.success .notification-icon {
+            color: var(--emerald);
+        }
+        .notification-toast.error .notification-icon {
+            color: #ef4444;
+        }
+        .notification-message {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #1f2937;
+        }
+
+        /* Mobile */
+        .menu-toggle-dashboard {
+            display: none;
+            background: var(--orange);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            .menu-toggle-dashboard {
+                display: block;
+            }
         }
     </style>
 </head>
@@ -71,27 +392,28 @@
     </aside>
 
     <main class="main-content">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
             <h1>Farmer Forum</h1>
-            <button class="menu-toggle-dashboard" id="menuToggle" style="display: none;">☰</button>
+            <button class="menu-toggle-dashboard" id="menuToggle">☰ Menu</button>
         </div>
 
-        <!-- Forum content (keep your existing code) -->
         <div class="category-list" id="categoryList"></div>
-        <button onclick="openNewTopicModal()" class="btn btn-primary">Start New Topic</button>
+        <button id="newTopicBtn" class="btn btn-primary">+ Start New Topic</button>
         <div id="topicsList" class="topic-list"></div>
     </main>
 </div>
 
-<!-- New Topic Modal (same as before) -->
+<!-- Modal -->
 <div id="newTopicModal" class="modal">
     <div class="modal-content">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <span class="close-modal" id="closeModalBtn">&times;</span>
         <h2>Create New Topic</h2>
         <form id="newTopicForm">
             <div class="form-group">
                 <label>Category</label>
-                <select id="topicCategory" required></select>
+                <select id="topicCategory" required>
+                    <!-- populated by JS -->
+                </select>
             </div>
             <div class="form-group">
                 <label>Title</label>
@@ -106,9 +428,177 @@
     </div>
 </div>
 
-<script src="forum.js"></script>
 <script>
-    // Sidebar toggle, logout, icons (same as marketplace)
+    // ==================== FORUM CODE ====================
+    const categories = ['Crops', 'Pests', 'Weather', 'General', 'Livestock'];
+    let currentCategory = 'Crops';
+    let currentUser = null;
+
+    // Helper: show notification
+    function showNotification(type, message) {
+        const oldNotif = document.querySelector('.notification-toast');
+        if (oldNotif) oldNotif.remove();
+        const notif = document.createElement('div');
+        notif.className = `notification-toast ${type}`;
+        notif.innerHTML = `<div class="notification-content"><span class="notification-icon">${type === 'success' ? '✓' : '⚠'}</span><span class="notification-message">${message}</span></div>`;
+        document.body.appendChild(notif);
+        setTimeout(() => notif.classList.add('show'), 10);
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => notif.remove(), 300);
+        }, 5000);
+    }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Format date
+    function formatDate(timestamp) {
+        if (!timestamp) return 'Just now';
+        const date = timestamp.toDate();
+        return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // Render category buttons
+    function renderCategories() {
+        const container = document.getElementById('categoryList');
+        container.innerHTML = '';
+        categories.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.textContent = cat;
+            btn.className = `category-btn ${cat === currentCategory ? 'active' : ''}`;
+            btn.addEventListener('click', () => {
+                currentCategory = cat;
+                renderCategories();
+                loadTopics();
+            });
+            container.appendChild(btn);
+        });
+    }
+
+    // Load topics from Firestore
+    let unsubscribeTopics = null;
+    function loadTopics() {
+        if (unsubscribeTopics) unsubscribeTopics();
+        unsubscribeTopics = db.collection('forum_topics')
+            .where('category', '==', currentCategory)
+            .orderBy('createdAt', 'desc')
+            .onSnapshot(snapshot => {
+                const topicsDiv = document.getElementById('topicsList');
+                topicsDiv.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const topicDiv = document.createElement('div');
+                    topicDiv.className = 'topic-card';
+                    topicDiv.innerHTML = `
+                        <div class="topic-title">${escapeHtml(data.title)}</div>
+                        <div class="topic-meta">By ${escapeHtml(data.userName)} · ${formatDate(data.createdAt)}</div>
+                        <div class="topic-preview">${escapeHtml(data.content.substring(0, 150))}${data.content.length > 150 ? '...' : ''}</div>
+                        <div class="topic-footer">
+                            <span></span>
+                            ${data.userId === currentUser?.uid ? `<button class="delete-topic" data-id="${doc.id}">Delete</button>` : ''}
+                        </div>
+                    `;
+                    topicsDiv.appendChild(topicDiv);
+                });
+
+                // Attach delete listeners
+                document.querySelectorAll('.delete-topic').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        const id = btn.getAttribute('data-id');
+                        if (confirm('Delete this topic?')) {
+                            await db.collection('forum_topics').doc(id).delete();
+                            showNotification('success', 'Topic deleted');
+                        }
+                    });
+                });
+
+                // Click on topic card to view details (future: replies page)
+                document.querySelectorAll('.topic-card').forEach((card, index) => {
+                    card.addEventListener('click', () => {
+                        const topicId = snapshot.docs[index].id;
+                        alert('Topic details page coming soon! (topic ID: ' + topicId + ')');
+                    });
+                });
+            });
+    }
+
+    // Open modal
+    function openModal() {
+        const modal = document.getElementById('newTopicModal');
+        const categorySelect = document.getElementById('topicCategory');
+        categorySelect.innerHTML = '';
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            option.textContent = cat;
+            if (cat === currentCategory) option.selected = true;
+            categorySelect.appendChild(option);
+        });
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('newTopicModal').style.display = 'none';
+    }
+
+    // Submit new topic
+    document.getElementById('newTopicForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!currentUser) return;
+
+        const category = document.getElementById('topicCategory').value;
+        const title = document.getElementById('topicTitle').value.trim();
+        const content = document.getElementById('topicContent').value.trim();
+
+        if (!title || !content) {
+            showNotification('error', 'Please fill in both title and content.');
+            return;
+        }
+
+        try {
+            await db.collection('forum_topics').add({
+                userId: currentUser.uid,
+                userName: currentUser.displayName,
+                category: category,
+                title: title,
+                content: content,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showNotification('success', 'Topic posted!');
+            closeModal();
+            document.getElementById('newTopicForm').reset();
+        } catch (error) {
+            console.error(error);
+            showNotification('error', 'Failed to post topic.');
+        }
+    });
+
+    // Authentication
+    auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+            window.location.href = "index.html";
+            return;
+        }
+        currentUser = user;
+        renderCategories();
+        loadTopics();
+
+        // Display user name in header
+        const userNameSpan = document.getElementById('userName');
+        if (userNameSpan) userNameSpan.textContent = user.displayName || 'Farmer';
+    });
+
+    // Sidebar toggle
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
     if (menuToggle) {
@@ -116,10 +606,22 @@
             sidebar.classList.toggle('open');
         });
     }
+
+    // Logout
     document.getElementById('logoutBtn').addEventListener('click', (e) => {
         e.preventDefault();
         auth.signOut().then(() => window.location.href = "index.html");
     });
+
+    // Modal open/close
+    document.getElementById('newTopicBtn').addEventListener('click', openModal);
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    window.addEventListener('click', (e) => {
+        const modal = document.getElementById('newTopicModal');
+        if (e.target === modal) closeModal();
+    });
+
+    // Lucide icons
     lucide.createIcons();
 </script>
 </body>
