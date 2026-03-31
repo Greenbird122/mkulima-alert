@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://greenbird122.github.io/mkulima-alert/sitemap.xml
