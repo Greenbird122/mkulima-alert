@@ -1,5 +1,9 @@
+// ============================================
+// OpenWeatherMap API Key
+// ============================================
 const WEATHER_API_KEY = '3718844e76e32727eb66f5a14fa67841';
 
+// Helper: show notification
 function showNotification(type, message) {
     const oldNotif = document.querySelector('.notification-toast');
     if (oldNotif) oldNotif.remove();
@@ -14,6 +18,7 @@ function showNotification(type, message) {
     }, 5000);
 }
 
+// Format date and hour
 function formatDay(dateStr) {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' });
@@ -24,44 +29,53 @@ function formatHour(timestamp) {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-// Dynamic background based on weather condition
-function setWeatherBackground(condition) {
-    const body = document.body;
-    const main = document.querySelector('.main-content');
-    const container = document.querySelector('.weather-container');
-    let gradient = '';
-    if (condition.includes('clear') || condition.includes('sun')) {
-        gradient = 'linear-gradient(145deg, #fff5e6 0%, #ffe6cc 100%)';
-    } else if (condition.includes('rain') || condition.includes('drizzle')) {
-        gradient = 'linear-gradient(145deg, #d4e0f0 0%, #b8cce6 100%)';
-    } else if (condition.includes('cloud')) {
-        gradient = 'linear-gradient(145deg, #e0e8f0 0%, #ccd8e6 100%)';
-    } else if (condition.includes('thunder')) {
-        gradient = 'linear-gradient(145deg, #2d2a4a 0%, #1e1a3a 100%)';
+// Change video background based on weather condition
+function setWeatherVideo(condition) {
+    const video = document.getElementById('bg-video');
+    if (!video) return;
+    const cond = condition.toLowerCase();
+    let videoUrl = '';
+    if (cond.includes('clear') || cond.includes('sun')) {
+        videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-sunny-day-in-a-wheat-field-41017-large.mp4';
+    } else if (cond.includes('rain') || cond.includes('drizzle')) {
+        videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-rain-drops-falling-on-wet-surface-39655-large.mp4';
+    } else if (cond.includes('cloud')) {
+        videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-clouds-moving-across-the-sky-41456-large.mp4';
+    } else if (cond.includes('thunder') || cond.includes('storm')) {
+        videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-storm-clouds-and-lightning-27001-large.mp4';
     } else {
-        gradient = 'linear-gradient(145deg, #e6f0fa 0%, #f0f9ff 100%)';
+        videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-sunny-day-in-a-wheat-field-41017-large.mp4';
     }
-    body.style.background = gradient;
-    if (container) container.style.background = 'transparent';
+    // Only change if different to avoid reload loops
+    if (video.src !== videoUrl) {
+        video.src = videoUrl;
+        video.load();
+        video.play().catch(e => console.log('Video autoplay prevented:', e));
+    }
 }
 
+// Fetch and display weather
 async function fetchWeather(county) {
     const container = document.getElementById('weatherContainer');
     if (!container) return;
+
     if (!WEATHER_API_KEY || WEATHER_API_KEY === 'YOUR_OPENWEATHER_API_KEY') {
         container.innerHTML = '<div class="error-message">⚠️ Weather API key missing.</div>';
         return;
     }
+
     const city = county.trim();
     const url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&units=metric&appid=${WEATHER_API_KEY}`;
     container.innerHTML = '<div class="spinner"></div>';
+
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error('Weather API error');
         const data = await response.json();
+
         const current = data.list[0];
         const condition = current.weather[0].description;
-        setWeatherBackground(condition);
+        setWeatherVideo(condition);
 
         const currentTemp = Math.round(current.main.temp);
         const icon = `https://openweathermap.org/img/wn/${current.weather[0].icon}@4x.png`;
@@ -69,6 +83,7 @@ async function fetchWeather(county) {
         const windSpeed = current.wind.speed;
         const feelsLike = Math.round(current.main.feels_like);
 
+        // Hourly (next 8 intervals)
         const hourlyData = data.list.slice(0, 8);
         let hourlyHtml = '<div class="hourly-forecast"><h3>Hourly Forecast</h3><div class="hourly-list">';
         hourlyData.forEach(item => {
@@ -86,6 +101,7 @@ async function fetchWeather(county) {
         });
         hourlyHtml += '</div></div>';
 
+        // Daily (7 days)
         const dailyMap = {};
         data.list.forEach(item => {
             const date = item.dt_txt.split(' ')[0];
@@ -136,6 +152,7 @@ async function fetchWeather(county) {
     }
 }
 
+// Firebase Auth
 auth.onAuthStateChanged(async (user) => {
     if (!user) {
         window.location.href = "index.html";
