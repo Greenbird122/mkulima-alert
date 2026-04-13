@@ -27,33 +27,54 @@
         }
         body {
             font-family: 'Inter', sans-serif;
-            background: #0f172a;
             color: #334155;
             line-height: 1.6;
             overflow-x: hidden;
             position: relative;
+            min-height: 100vh;
+            background: #0f172a;
+            transition: background 0.5s ease;
         }
-        #bg-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            z-index: -2;
-            object-fit: cover;
-            background: #0f172a; /* fallback while loading */
-        }
-        .overlay {
+        /* Animated gradient background */
+        .animated-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.45);
-            z-index: -1;
+            z-index: -2;
+            background: linear-gradient(125deg, #0f172a, #1e293b, #0f172a);
+            background-size: 200% 200%;
+            animation: gradientFlow 12s ease infinite;
+            transition: background 0.5s;
         }
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* Floating particles (subtle life) */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .particle {
+            position: absolute;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            animation: floatParticle 8s infinite ease-in-out;
+        }
+        @keyframes floatParticle {
+            0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        /* Glassmorphism sidebar */
         .dashboard-layout {
             display: flex;
             min-height: 100vh;
@@ -140,6 +161,7 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* Glass cards */
         .current-county-container, .current-weather-compact, .hourly-card, .forecast-card {
             background: rgba(255,255,255,0.7);
             backdrop-filter: blur(8px);
@@ -177,6 +199,12 @@
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
+            animation: breathe 2s ease infinite;
+        }
+        @keyframes breathe {
+            0% { text-shadow: 0 0 0 rgba(249,115,22,0); }
+            50% { text-shadow: 0 0 8px rgba(249,115,22,0.4); }
+            100% { text-shadow: 0 0 0 rgba(249,115,22,0); }
         }
         .current-condition {
             font-size: 1.2rem;
@@ -191,6 +219,12 @@
         .current-icon img {
             width: 80px;
             height: 80px;
+            animation: floatIcon 3s ease infinite;
+        }
+        @keyframes floatIcon {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
         }
         .hourly-list {
             display: flex;
@@ -202,6 +236,11 @@
             min-width: 90px;
             padding: 1rem 0.5rem;
             text-align: center;
+            transition: transform 0.2s;
+        }
+        .hourly-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.9);
         }
         .forecast-grid {
             display: grid;
@@ -211,6 +250,11 @@
         .forecast-card {
             padding: 1rem;
             text-align: center;
+            transition: transform 0.2s;
+        }
+        .forecast-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.9);
         }
         .spinner {
             border: 4px solid rgba(0,0,0,0.1);
@@ -252,11 +296,8 @@
     </style>
 </head>
 <body>
-    <!-- Video background with confirmed working URLs -->
-    <video autoplay muted loop playsinline id="bg-video">
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-sunny-day-in-a-wheat-field-41017-large.mp4" type="video/mp4">
-    </video>
-    <div class="overlay"></div>
+    <div class="animated-bg" id="animatedBg"></div>
+    <div class="particles" id="particles"></div>
 
     <div class="dashboard-layout">
         <aside class="sidebar" id="sidebar">
@@ -298,6 +339,26 @@
     </div>
 
     <script>
+        // Generate floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                const size = Math.random() * 6 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.bottom = '-20px';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                particle.style.animationDuration = Math.random() * 6 + 4 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // Weather API
         const WEATHER_API_KEY = '3718844e76e32727eb66f5a14fa67841';
 
         function showNotification(type, message) {
@@ -323,28 +384,25 @@
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        // Video switcher using working Mixkit URLs
-        function setWeatherVideo(condition) {
-            const video = document.getElementById('bg-video');
-            if (!video) return;
+        // Change gradient based on weather
+        function setWeatherGradient(condition) {
+            const bg = document.getElementById('animatedBg');
+            if (!bg) return;
             const cond = condition.toLowerCase();
-            let newSrc = '';
+            let gradient = '';
             if (cond.includes('clear') || cond.includes('sun')) {
-                newSrc = 'https://assets.mixkit.co/videos/preview/mixkit-sunny-day-in-a-wheat-field-41017-large.mp4';
+                gradient = 'linear-gradient(125deg, #fbbf24, #f97316, #f59e0b)';
             } else if (cond.includes('rain') || cond.includes('drizzle')) {
-                newSrc = 'https://assets.mixkit.co/videos/preview/mixkit-rain-drops-falling-on-wet-surface-39655-large.mp4';
+                gradient = 'linear-gradient(125deg, #1e3a8a, #3b82f6, #1e3a8a)';
             } else if (cond.includes('cloud')) {
-                newSrc = 'https://assets.mixkit.co/videos/preview/mixkit-clouds-moving-across-the-sky-41456-large.mp4';
+                gradient = 'linear-gradient(125deg, #475569, #94a3b8, #475569)';
             } else if (cond.includes('thunder') || cond.includes('storm')) {
-                newSrc = 'https://assets.mixkit.co/videos/preview/mixkit-storm-clouds-and-lightning-27001-large.mp4';
+                gradient = 'linear-gradient(125deg, #4c1d95, #8b5cf6, #4c1d95)';
             } else {
-                newSrc = 'https://assets.mixkit.co/videos/preview/mixkit-sunny-day-in-a-wheat-field-41017-large.mp4';
+                gradient = 'linear-gradient(125deg, #0f172a, #1e293b, #0f172a)';
             }
-            if (video.src !== newSrc) {
-                video.src = newSrc;
-                video.load();
-                video.play().catch(e => console.log('Autoplay prevented:', e));
-            }
+            bg.style.background = gradient;
+            bg.style.backgroundSize = '200% 200%';
         }
 
         async function fetchWeather(county) {
@@ -361,10 +419,9 @@
                 const resp = await fetch(url);
                 if (!resp.ok) throw new Error('API error');
                 const data = await resp.json();
-
                 const current = data.list[0];
                 const condition = current.weather[0].description;
-                setWeatherVideo(condition);
+                setWeatherGradient(condition);
 
                 const currentTemp = Math.round(current.main.temp);
                 const icon = `https://openweathermap.org/img/wn/${current.weather[0].icon}@4x.png`;
@@ -372,7 +429,6 @@
                 const windSpeed = current.wind.speed;
                 const feelsLike = Math.round(current.main.feels_like);
 
-                // Hourly
                 const hourlyData = data.list.slice(0, 8);
                 let hourlyHtml = '<div class="hourly-forecast"><h3>Hourly Forecast</h3><div class="hourly-list">';
                 for (const item of hourlyData) {
@@ -384,7 +440,6 @@
                 }
                 hourlyHtml += '</div></div>';
 
-                // Daily
                 const dailyMap = {};
                 data.list.forEach(item => {
                     const date = item.dt_txt.split(' ')[0];
