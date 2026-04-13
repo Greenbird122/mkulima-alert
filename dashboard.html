@@ -49,6 +49,7 @@
             background: var(--slate-50);
             color: var(--slate-700);
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         /* Dashboard Layout */
@@ -64,7 +65,7 @@
             position: fixed;
             height: 100vh;
             overflow-y: auto;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             z-index: 1000;
         }
 
@@ -89,6 +90,10 @@
             align-items: center;
             justify-content: center;
             color: var(--white);
+            transition: transform 0.2s ease;
+        }
+        .logo-icon:hover {
+            transform: scale(1.05);
         }
 
         .logo-text {
@@ -125,17 +130,19 @@
             border-radius: 0.5rem;
             color: var(--slate-700);
             text-decoration: none;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
 
         .nav-item:hover {
             background: var(--slate-100);
             color: var(--orange);
+            transform: translateX(4px);
         }
 
         .nav-item.active {
             background: var(--orange);
             color: white;
+            box-shadow: 0 2px 6px rgba(249,115,22,0.3);
         }
 
         .nav-item i {
@@ -148,6 +155,36 @@
             flex: 1;
             margin-left: 280px;
             padding: 2rem;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        /* Keyframe Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(249,115,22,0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(249,115,22,0); }
+            100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes spinSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         /* County Info */
@@ -157,6 +194,10 @@
             padding: 1rem 1.5rem;
             margin-bottom: 1.5rem;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: box-shadow 0.2s;
+        }
+        .current-county-container:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         .county-info {
             display: flex;
@@ -178,27 +219,37 @@
             color: var(--orange);
             text-decoration: none;
             font-size: 0.9rem;
+            transition: all 0.2s;
         }
         .change-county-link:hover {
             text-decoration: underline;
+            transform: translateX(2px);
         }
 
-        /* Weather Widget Styles (Zerod-like) */
+        /* Weather Widget */
         .weather-container {
             margin-top: 1rem;
         }
 
         /* Current Weather Compact Card */
         .current-weather-compact {
-            background: var(--white);
+            background: linear-gradient(135deg, var(--white) 0%, var(--slate-50) 100%);
             border-radius: 1.5rem;
             padding: 1.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.4s ease-out;
+            border: 1px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(2px);
+        }
+        .current-weather-compact:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.1);
         }
         .current-temp-section {
             text-align: left;
@@ -208,11 +259,14 @@
             font-weight: 700;
             color: var(--slate-900);
             line-height: 1;
+            animation: pulseGlow 2s infinite;
+            display: inline-block;
         }
         .current-condition {
             font-size: 1.1rem;
             color: var(--slate-600);
             margin-top: 0.25rem;
+            text-transform: capitalize;
         }
         .current-details {
             display: flex;
@@ -224,11 +278,17 @@
         .current-icon img {
             width: 64px;
             height: 64px;
+            transition: transform 0.3s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+        .current-icon img:hover {
+            transform: scale(1.1);
         }
 
-        /* Hourly Forecast Scroll */
+        /* Hourly Forecast */
         .hourly-forecast {
             margin-bottom: 2rem;
+            animation: fadeInUp 0.5s ease-out 0.1s both;
         }
         .hourly-forecast h3 {
             font-size: 1.2rem;
@@ -248,7 +308,14 @@
             border-radius: 1rem;
             padding: 0.75rem 0.5rem;
             text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: pointer;
+        }
+        .hourly-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            background: var(--slate-50);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
         .hourly-time {
             font-size: 0.8rem;
@@ -258,16 +325,20 @@
         .hourly-icon img {
             width: 40px;
             height: 40px;
-            margin: 0.25rem 0;
+            transition: transform 0.2s;
+        }
+        .hourly-card:hover .hourly-icon img {
+            transform: scale(1.1);
         }
         .hourly-temp {
             font-size: 0.9rem;
             font-weight: 500;
         }
 
-        /* Daily Forecast Grid */
+        /* Daily Forecast */
         .daily-forecast {
             margin-bottom: 2rem;
+            animation: fadeInUp 0.5s ease-out 0.2s both;
         }
         .daily-forecast h3 {
             font-size: 1.2rem;
@@ -284,11 +355,14 @@
             border-radius: 1rem;
             padding: 0.75rem;
             text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
         .forecast-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px) scale(1.02);
+            background: linear-gradient(145deg, var(--white), var(--slate-50));
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
         .forecast-day {
             font-weight: 600;
@@ -298,6 +372,10 @@
         .forecast-icon img {
             width: 40px;
             height: 40px;
+            transition: transform 0.2s;
+        }
+        .forecast-card:hover .forecast-icon img {
+            transform: scale(1.1);
         }
         .forecast-temp {
             font-size: 0.9rem;
@@ -332,6 +410,12 @@
             padding: 1rem;
             border-radius: 0.75rem;
             margin: 1rem 0;
+            animation: shake 0.4s ease;
+        }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
 
         /* Notification Toast */
@@ -341,7 +425,7 @@
             right: 20px;
             z-index: 10000;
             transform: translateX(400px);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
         .notification-toast.show {
             transform: translateX(0);
@@ -382,6 +466,11 @@
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
             cursor: pointer;
+            transition: all 0.2s;
+        }
+        .menu-toggle-dashboard:hover {
+            transform: scale(1.02);
+            background: #ea580c;
         }
 
         @media (max-width: 768px) {
@@ -449,7 +538,6 @@
             <button class="menu-toggle-dashboard" id="menuToggle">☰ Menu</button>
         </div>
 
-        <!-- County Info -->
         <div class="current-county-container">
             <div class="county-info">
                 <span class="label">Your County:</span>
@@ -465,7 +553,7 @@
 
 <script src="dashboard.js"></script>
 <script>
-    // Sidebar toggle
+    // Sidebar toggle with animation
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
     if (menuToggle) {
@@ -474,10 +562,12 @@
         });
     }
 
-    // Logout
+    // Logout with subtle notification
     document.getElementById('logoutBtn').addEventListener('click', (e) => {
         e.preventDefault();
-        auth.signOut().then(() => window.location.href = "index.html");
+        auth.signOut().then(() => {
+            window.location.href = "index.html";
+        });
     });
 </script>
 </body>
