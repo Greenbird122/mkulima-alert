@@ -20,39 +20,20 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
     <style>
-        /* ---------- Global Variables ---------- */
-        :root {
-            --orange: #f97316;
-            --emerald: #10b981;
-            --blue: #0ea5e9;
-            --slate-900: #0f172a;
-            --slate-800: #1e293b;
-            --slate-700: #334155;
-            --slate-600: #475569;
-            --slate-500: #64748b;
-            --slate-400: #94a3b8;
-            --slate-300: #cbd5e1;
-            --slate-200: #e2e8f0;
-            --slate-100: #f1f5f9;
-            --slate-50: #f8fafc;
-            --white: #ffffff;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Inter', sans-serif;
-            color: var(--slate-700);
+            background: #0f172a; /* fallback */
+            color: #334155;
             line-height: 1.6;
             overflow-x: hidden;
             position: relative;
         }
-
-        /* Video Background */
+        /* Video background */
         #bg-video {
             position: fixed;
             top: 0;
@@ -63,30 +44,24 @@
             height: auto;
             z-index: -2;
             object-fit: cover;
-            filter: brightness(0.7) blur(2px);
             transition: opacity 0.5s ease;
         }
-
-        /* Dark overlay for readability */
         .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.45);
             z-index: -1;
         }
-
-        /* Dashboard Layout */
+        /* Glassmorphism sidebar */
         .dashboard-layout {
             display: flex;
             min-height: 100vh;
             position: relative;
             z-index: 1;
         }
-
-        /* Glassmorphism Sidebar */
         .sidebar {
             width: 280px;
             background: rgba(255,255,255,0.85);
@@ -95,66 +70,47 @@
             position: fixed;
             height: 100vh;
             overflow-y: auto;
-            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transition: transform 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
             z-index: 1000;
         }
-
         .sidebar-header {
             padding: 2rem 1.5rem;
             border-bottom: 1px solid rgba(0,0,0,0.05);
         }
-
-        .sidebar-header .logo {
+        .logo {
             display: flex;
             align-items: center;
             gap: 0.75rem;
             text-decoration: none;
         }
-
         .logo-icon {
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--orange), var(--emerald));
+            background: linear-gradient(135deg, #f97316, #10b981);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            transition: transform 0.2s ease;
         }
-
-        .logo-icon:hover {
-            transform: scale(1.05);
-        }
-
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-        }
-
         .logo-title {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 1.5rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--orange), var(--emerald));
+            background: linear-gradient(135deg, #f97316, #10b981);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
         }
-
         .logo-sub {
             font-size: 0.7rem;
             font-weight: 600;
-            color: var(--emerald);
+            color: #10b981;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
         }
-
         .sidebar-nav {
             padding: 1.5rem;
         }
-
         .nav-item {
             display: flex;
             align-items: center;
@@ -162,37 +118,31 @@
             padding: 0.75rem 1rem;
             margin-bottom: 0.5rem;
             border-radius: 0.5rem;
-            color: var(--slate-700);
+            color: #334155;
             text-decoration: none;
             transition: all 0.2s;
         }
-
         .nav-item:hover {
             background: rgba(249,115,22,0.1);
-            color: var(--orange);
+            color: #f97316;
             transform: translateX(4px);
         }
-
         .nav-item.active {
-            background: linear-gradient(135deg, var(--orange), var(--emerald));
+            background: linear-gradient(135deg, #f97316, #10b981);
             color: white;
             box-shadow: 0 4px 15px rgba(249,115,22,0.3);
         }
-
-        /* Main Content */
         .main-content {
             flex: 1;
             margin-left: 280px;
             padding: 2rem;
             animation: fadeInUp 0.5s ease-out;
         }
-
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Glass Cards */
+        /* Glass cards */
         .current-county-container, .current-weather-compact, .hourly-card, .forecast-card {
             background: rgba(255,255,255,0.7);
             backdrop-filter: blur(8px);
@@ -200,12 +150,21 @@
             border: 1px solid rgba(255,255,255,0.5);
             transition: all 0.3s ease;
         }
-
         .current-county-container {
             padding: 1rem 1.5rem;
             margin-bottom: 1.5rem;
         }
-
+        .county-info {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .change-county-link {
+            color: #f97316;
+            text-decoration: none;
+            font-weight: 500;
+        }
         .current-weather-compact {
             padding: 1.8rem;
             margin-bottom: 2rem;
@@ -214,78 +173,70 @@
             align-items: center;
             flex-wrap: wrap;
         }
-
         .current-temp {
             font-size: 3.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--orange), var(--emerald));
+            background: linear-gradient(135deg, #f97316, #10b981);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
         }
-
+        .current-condition {
+            font-size: 1.2rem;
+            text-transform: capitalize;
+        }
+        .current-details {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .current-icon img {
+            width: 80px;
+            height: 80px;
+        }
         .hourly-list {
             display: flex;
             gap: 1rem;
             overflow-x: auto;
             padding-bottom: 1rem;
         }
-
         .hourly-card {
             min-width: 90px;
             padding: 1rem 0.5rem;
             text-align: center;
         }
-
-        .hourly-card:hover, .forecast-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255,255,255,0.9);
-        }
-
         .forecast-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
             gap: 1rem;
         }
-
         .forecast-card {
             padding: 1rem;
             text-align: center;
         }
-
-        .change-county-link {
-            color: var(--orange);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        /* Spinner */
         .spinner {
             border: 4px solid rgba(0,0,0,0.1);
-            border-top: 4px solid var(--orange);
+            border-top: 4px solid #f97316;
             border-radius: 50%;
             width: 50px;
             height: 50px;
             animation: spin 1s linear infinite;
             margin: 2rem auto;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        /* Mobile */
         .menu-toggle-dashboard {
             display: none;
-            background: linear-gradient(135deg, var(--orange), var(--emerald));
+            background: linear-gradient(135deg, #f97316, #10b981);
             color: white;
             border: none;
             padding: 0.5rem 1rem;
             border-radius: 2rem;
             cursor: pointer;
         }
-
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -304,7 +255,7 @@
     </style>
 </head>
 <body>
-    <!-- Video Background -->
+    <!-- Video background -->
     <video autoplay muted loop playsinline id="bg-video">
         <source src="https://assets.mixkit.co/videos/preview/mixkit-sunny-day-in-a-wheat-field-41017-large.mp4" type="video/mp4">
     </video>
@@ -336,7 +287,6 @@
                 <h1>Welcome, <span id="userName">Farmer</span>!</h1>
                 <button class="menu-toggle-dashboard" id="menuToggle">☰ Menu</button>
             </div>
-
             <div class="current-county-container">
                 <div class="county-info">
                     <span class="label">Your County:</span>
@@ -350,17 +300,189 @@
         </main>
     </div>
 
-    <script src="dashboard.js"></script>
     <script>
-        // Sidebar toggle
+        // ------------------------------------------------------------------
+        // 1. Firebase and weather logic (fully working)
+        // ------------------------------------------------------------------
+        const WEATHER_API_KEY = '3718844e76e32727eb66f5a14fa67841';
+
+        function showNotification(type, message) {
+            const old = document.querySelector('.notification-toast');
+            if (old) old.remove();
+            const notif = document.createElement('div');
+            notif.className = `notification-toast ${type}`;
+            notif.innerHTML = `<div class="notification-content"><span class="notification-icon">${type === 'success' ? '✓' : '⚠'}</span><span class="notification-message">${message}</span></div>`;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.classList.add('show'), 10);
+            setTimeout(() => {
+                notif.classList.remove('show');
+                setTimeout(() => notif.remove(), 300);
+            }, 5000);
+        }
+
+        function formatDay(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' });
+        }
+        function formatHour(timestamp) {
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Video switcher (robust)
+        function setWeatherVideo(condition) {
+            const video = document.getElementById('bg-video');
+            if (!video) return;
+            const cond = condition.toLowerCase();
+            let newSrc = '';
+            if (cond.includes('clear') || cond.includes('sun')) {
+                newSrc = 'https://assets.mixkit.co/videos/preview/mixkit-sunny-day-in-a-wheat-field-41017-large.mp4';
+            } else if (cond.includes('rain') || cond.includes('drizzle')) {
+                newSrc = 'https://assets.mixkit.co/videos/preview/mixkit-rain-drops-falling-on-wet-surface-39655-large.mp4';
+            } else if (cond.includes('cloud')) {
+                newSrc = 'https://assets.mixkit.co/videos/preview/mixkit-clouds-moving-across-the-sky-41456-large.mp4';
+            } else if (cond.includes('thunder') || cond.includes('storm')) {
+                newSrc = 'https://assets.mixkit.co/videos/preview/mixkit-storm-clouds-and-lightning-27001-large.mp4';
+            } else {
+                newSrc = 'https://assets.mixkit.co/videos/preview/mixkit-sunny-day-in-a-wheat-field-41017-large.mp4';
+            }
+            if (video.src !== newSrc) {
+                video.src = newSrc;
+                video.load();
+                video.play().catch(e => console.log('autoplay blocked, but video will play on user interaction', e));
+            }
+        }
+
+        async function fetchWeather(county) {
+            const container = document.getElementById('weatherContainer');
+            if (!container) return;
+            if (!WEATHER_API_KEY || WEATHER_API_KEY === 'YOUR_OPENWEATHER_API_KEY') {
+                container.innerHTML = '<div class="error-message">⚠️ Weather API key missing.</div>';
+                return;
+            }
+            const city = county.trim();
+            const url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&units=metric&appid=${WEATHER_API_KEY}`;
+            container.innerHTML = '<div class="spinner"></div>';
+            try {
+                const resp = await fetch(url);
+                if (!resp.ok) throw new Error('API error');
+                const data = await resp.json();
+
+                const current = data.list[0];
+                const condition = current.weather[0].description;
+                setWeatherVideo(condition);
+
+                const currentTemp = Math.round(current.main.temp);
+                const icon = `https://openweathermap.org/img/wn/${current.weather[0].icon}@4x.png`;
+                const humidity = current.main.humidity;
+                const windSpeed = current.wind.speed;
+                const feelsLike = Math.round(current.main.feels_like);
+
+                // Hourly (next 8 intervals)
+                const hourlyData = data.list.slice(0, 8);
+                let hourlyHtml = '<div class="hourly-forecast"><h3>Hourly Forecast</h3><div class="hourly-list">';
+                for (const item of hourlyData) {
+                    const time = formatHour(item.dt);
+                    const temp = Math.round(item.main.temp);
+                    const iconCode = item.weather[0].icon;
+                    const iconUrl = `https://openweathermap.org/img/wn/${iconCode}.png`;
+                    hourlyHtml += `
+                        <div class="hourly-card">
+                            <div class="hourly-time">${time}</div>
+                            <div class="hourly-icon"><img src="${iconUrl}" alt=""></div>
+                            <div class="hourly-temp">${temp}°</div>
+                        </div>
+                    `;
+                }
+                hourlyHtml += '</div></div>';
+
+                // Daily
+                const dailyMap = {};
+                data.list.forEach(item => {
+                    const date = item.dt_txt.split(' ')[0];
+                    if (!dailyMap[date]) dailyMap[date] = item;
+                });
+                const dailyArray = Object.values(dailyMap).slice(0, 7);
+                let dailyHtml = '<div class="daily-forecast"><h3>7-Day Forecast</h3><div class="forecast-grid">';
+                for (const day of dailyArray) {
+                    const dayName = formatDay(day.dt_txt.split(' ')[0]);
+                    const tempHigh = Math.round(day.main.temp_max);
+                    const tempLow = Math.round(day.main.temp_min);
+                    const iconCode = day.weather[0].icon;
+                    const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+                    dailyHtml += `
+                        <div class="forecast-card">
+                            <div class="forecast-day">${dayName}</div>
+                            <div class="forecast-icon"><img src="${iconUrl}" alt=""></div>
+                            <div class="forecast-temp">
+                                <span class="forecast-temp-high">${tempHigh}°</span>
+                                <span class="forecast-temp-low">${tempLow}°</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                dailyHtml += '</div></div>';
+
+                container.innerHTML = `
+                    <div class="current-weather-compact">
+                        <div class="current-temp-section">
+                            <div class="current-temp">${currentTemp}°C</div>
+                            <div class="current-condition">${condition}</div>
+                            <div class="current-details">
+                                <span>💧 ${humidity}%</span>
+                                <span>💨 ${windSpeed} m/s</span>
+                                <span>🌡️ ${feelsLike}°</span>
+                            </div>
+                        </div>
+                        <div class="current-icon">
+                            <img src="${icon}" alt="${condition}">
+                        </div>
+                    </div>
+                    ${hourlyHtml}
+                    ${dailyHtml}
+                `;
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<div class="error-message">⚠️ Weather fetch failed for "${city}". Check your county in profile.</div>`;
+            }
+        }
+
+        // Firebase auth
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = "index.html";
+                return;
+            }
+            document.getElementById('userName').innerText = user.displayName || 'Farmer';
+            const userRef = db.collection('users').doc(user.uid);
+            const doc = await userRef.get();
+            let savedCounty = null;
+            if (doc.exists) {
+                savedCounty = doc.data().county;
+            } else {
+                await userRef.set({
+                    name: user.displayName,
+                    email: user.email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    county: null
+                });
+            }
+            const countySpan = document.getElementById('currentCountyDisplay');
+            if (savedCounty) {
+                countySpan.innerText = savedCounty;
+                fetchWeather(savedCounty);
+            } else {
+                countySpan.innerText = 'Not set';
+                document.getElementById('weatherContainer').innerHTML = '<div class="error-message">Please <a href="profile.html">set your county</a> to see weather.</div>';
+            }
+        });
+
+        // Sidebar toggle and logout
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         if (menuToggle) {
-            menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-            });
+            menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
         }
-        // Logout
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
             auth.signOut().then(() => window.location.href = "index.html");
