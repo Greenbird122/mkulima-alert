@@ -24,7 +24,13 @@ function formatDay(dateStr) {
     return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' });
 }
 
-// Fetch and display weather
+// Helper: format hour (e.g., "09:00")
+function formatHour(timestamp) {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+// Fetch and display weather (Zerod-like format)
 async function fetchWeather(county) {
     const container = document.getElementById('weatherContainer');
     if (!container) return;
@@ -47,48 +53,50 @@ async function fetchWeather(county) {
         }
         const data = await response.json();
 
+        // ---------- Current Weather ----------
         const current = data.list[0];
         const currentTemp = Math.round(current.main.temp);
-        const feelsLike = Math.round(current.main.feels_like);
+        const condition = current.weather[0].description;
+        const icon = `https://openweathermap.org/img/wn/${current.weather[0].icon}@2x.png`;
         const humidity = current.main.humidity;
         const windSpeed = current.wind.speed;
-        const description = current.weather[0].description;
-        const icon = `https://openweathermap.org/img/wn/${current.weather[0].icon}@4x.png`;
+        const feelsLike = Math.round(current.main.feels_like);
 
-        const daily = {};
+        // ---------- Hourly Forecast (next 8 intervals, 24 hours) ----------
+        const hourlyData = data.list.slice(0, 8);
+        let hourlyHtml = '<div class="hourly-forecast"><h3>Hourly Forecast</h3><div class="hourly-list">';
+        hourlyData.forEach(item => {
+            const time = formatHour(item.dt);
+            const temp = Math.round(item.main.temp);
+            const iconCode = item.weather[0].icon;
+            const iconUrl = `https://openweathermap.org/img/wn/${iconCode}.png`;
+            hourlyHtml += `
+                <div class="hourly-card">
+                    <div class="hourly-time">${time}</div>
+                    <div class="hourly-icon"><img src="${iconUrl}" alt=""></div>
+                    <div class="hourly-temp">${temp}°</div>
+                </div>
+            `;
+        });
+        hourlyHtml += '</div></div>';
+
+        // ---------- Daily Forecast (next 7 days) ----------
+        const dailyMap = {};
         data.list.forEach(item => {
             const date = item.dt_txt.split(' ')[0];
-            if (!daily[date]) {
-                daily[date] = item;
+            if (!dailyMap[date]) {
+                dailyMap[date] = item;
             }
         });
-        const forecastArray = Object.values(daily).slice(1, 8);
-
-        let html = `
-            <div class="current-weather">
-                <div class="location">${city}</div>
-                <div class="weather-main">
-                    <div class="temp">${currentTemp}°C</div>
-                    <div class="weather-icon"><img src="${icon}" alt="${description}"></div>
-                </div>
-                <div class="description">${description}</div>
-                <div class="details">
-                    <div class="detail-item"><i data-lucide="thermometer"></i> Feels like ${feelsLike}°C</div>
-                    <div class="detail-item"><i data-lucide="droplet"></i> Humidity ${humidity}%</div>
-                    <div class="detail-item"><i data-lucide="wind"></i> Wind ${windSpeed} m/s</div>
-                </div>
-            </div>
-            <h3 style="margin: 2rem 0 1rem;">7-Day Forecast</h3>
-            <div class="forecast-grid">
-        `;
-
-        forecastArray.forEach(day => {
+        const dailyArray = Object.values(dailyMap).slice(0, 7);
+        let dailyHtml = '<div class="daily-forecast"><h3>7-Day Forecast</h3><div class="forecast-grid">';
+        dailyArray.forEach(day => {
             const dayName = formatDay(day.dt_txt.split(' ')[0]);
             const tempHigh = Math.round(day.main.temp_max);
             const tempLow = Math.round(day.main.temp_min);
             const iconCode = day.weather[0].icon;
             const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-            html += `
+            dailyHtml += `
                 <div class="forecast-card">
                     <div class="forecast-day">${dayName}</div>
                     <div class="forecast-icon"><img src="${iconUrl}" alt=""></div>
@@ -99,10 +107,27 @@ async function fetchWeather(county) {
                 </div>
             `;
         });
+        dailyHtml += '</div></div>';
 
-        html += `</div>`;
-        container.innerHTML = html;
-        // No lucide.createIcons() – the font handles the icons.
+        // Combine everything into the container
+        container.innerHTML = `
+            <div class="current-weather-compact">
+                <div class="current-temp-section">
+                    <div class="current-temp">${currentTemp}°C</div>
+                    <div class="current-condition">${condition}</div>
+                    <div class="current-details">
+                        <span>💧 ${humidity}%</span>
+                        <span>💨 ${windSpeed} m/s</span>
+                        <span>🌡️ ${feelsLike}°</span>
+                    </div>
+                </div>
+                <div class="current-icon">
+                    <img src="${icon}" alt="${condition}">
+                </div>
+            </div>
+            ${hourlyHtml}
+            ${dailyHtml}
+        `;
     } catch (error) {
         console.error(error);
         container.innerHTML = `<div class="error-message">⚠️ Could not fetch weather for "${city}". Please check your county in profile.</div>`;
@@ -116,6 +141,7 @@ auth.onAuthStateChanged(async (user) => {
         return;
     }
 
+    // Display user name
     const userNameSpan = document.getElementById('userName');
     if (userNameSpan) userNameSpan.textContent = user.displayName || 'Farmer';
 
@@ -126,6 +152,7 @@ auth.onAuthStateChanged(async (user) => {
     if (doc.exists) {
         savedCounty = doc.data().county;
     } else {
+        // Create profile if missing
         await userRef.set({
             name: user.displayName,
             email: user.email,
