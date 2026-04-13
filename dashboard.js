@@ -30,7 +30,7 @@ function formatHour(timestamp) {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-// Fetch and display weather (Zerod-like format)
+// Fetch and display weather (animated version)
 async function fetchWeather(county) {
     const container = document.getElementById('weatherContainer');
     if (!container) return;
@@ -53,7 +53,7 @@ async function fetchWeather(county) {
         }
         const data = await response.json();
 
-        // ---------- Current Weather ----------
+        // Current weather
         const current = data.list[0];
         const currentTemp = Math.round(current.main.temp);
         const condition = current.weather[0].description;
@@ -62,7 +62,7 @@ async function fetchWeather(county) {
         const windSpeed = current.wind.speed;
         const feelsLike = Math.round(current.main.feels_like);
 
-        // ---------- Hourly Forecast (next 8 intervals, 24 hours) ----------
+        // Hourly forecast (next 8 intervals)
         const hourlyData = data.list.slice(0, 8);
         let hourlyHtml = '<div class="hourly-forecast"><h3>Hourly Forecast</h3><div class="hourly-list">';
         hourlyData.forEach(item => {
@@ -80,7 +80,7 @@ async function fetchWeather(county) {
         });
         hourlyHtml += '</div></div>';
 
-        // ---------- Daily Forecast (next 7 days) ----------
+        // Daily forecast (next 7 days)
         const dailyMap = {};
         data.list.forEach(item => {
             const date = item.dt_txt.split(' ')[0];
@@ -109,7 +109,6 @@ async function fetchWeather(county) {
         });
         dailyHtml += '</div></div>';
 
-        // Combine everything into the container
         container.innerHTML = `
             <div class="current-weather-compact">
                 <div class="current-temp-section">
@@ -141,7 +140,6 @@ auth.onAuthStateChanged(async (user) => {
         return;
     }
 
-    // Display user name
     const userNameSpan = document.getElementById('userName');
     if (userNameSpan) userNameSpan.textContent = user.displayName || 'Farmer';
 
@@ -152,7 +150,6 @@ auth.onAuthStateChanged(async (user) => {
     if (doc.exists) {
         savedCounty = doc.data().county;
     } else {
-        // Create profile if missing
         await userRef.set({
             name: user.displayName,
             email: user.email,
