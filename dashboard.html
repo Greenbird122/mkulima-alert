@@ -25,7 +25,6 @@
             --orange: #f97316;
             --emerald: #10b981;
             --blue: #0ea5e9;
-            --purple: #a855f7;
             --slate-900: #0f172a;
             --slate-800: #1e293b;
             --slate-700: #334155;
@@ -37,7 +36,6 @@
             --slate-100: #f1f5f9;
             --slate-50: #f8fafc;
             --white: #ffffff;
-            --transition-smooth: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
 
         * {
@@ -48,32 +46,36 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(145deg, #f0f9ff 0%, #e6f0fa 100%);
             color: var(--slate-700);
             line-height: 1.6;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* Animated Background Particles */
-        body::before {
-            content: '';
+        /* Video Background */
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -2;
+            object-fit: cover;
+            filter: brightness(0.7) blur(2px);
+            transition: opacity 0.5s ease;
+        }
+
+        /* Dark overlay for readability */
+        .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            background-image: radial-gradient(circle at 20% 30%, rgba(249,115,22,0.08) 2%, transparent 2.5%),
-                              radial-gradient(circle at 80% 70%, rgba(16,185,129,0.08) 1.5%, transparent 2%);
-            background-size: 60px 60px, 80px 80px;
-            animation: floatParticles 20s linear infinite;
-        }
-
-        @keyframes floatParticles {
-            0% { background-position: 0 0, 0 0; }
-            100% { background-position: 100px 100px, -80px 80px; }
+            background: rgba(0,0,0,0.4);
+            z-index: -1;
         }
 
         /* Dashboard Layout */
@@ -84,9 +86,10 @@
             z-index: 1;
         }
 
+        /* Glassmorphism Sidebar */
         .sidebar {
             width: 280px;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.85);
             backdrop-filter: blur(12px);
             border-right: 1px solid rgba(255,255,255,0.3);
             position: fixed;
@@ -117,13 +120,11 @@
             align-items: center;
             justify-content: center;
             color: white;
-            transition: transform 0.2s ease, box-shadow 0.2s;
-            animation: pulseGlow 2s infinite;
+            transition: transform 0.2s ease;
         }
 
         .logo-icon:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(249,115,22,0.5);
         }
 
         .logo-text {
@@ -163,30 +164,13 @@
             border-radius: 0.5rem;
             color: var(--slate-700);
             text-decoration: none;
-            transition: var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(249,115,22,0.1), transparent);
-            transition: left 0.4s;
-        }
-
-        .nav-item:hover::before {
-            left: 100%;
+            transition: all 0.2s;
         }
 
         .nav-item:hover {
             background: rgba(249,115,22,0.1);
             color: var(--orange);
-            transform: translateX(6px);
+            transform: translateX(4px);
         }
 
         .nav-item.active {
@@ -200,80 +184,35 @@
             flex: 1;
             margin-left: 280px;
             padding: 2rem;
-            animation: fadeInUp 0.6s ease-out;
+            animation: fadeInUp 0.5s ease-out;
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* County Info */
-        .current-county-container {
+        /* Glass Cards */
+        .current-county-container, .current-weather-compact, .hourly-card, .forecast-card {
             background: rgba(255,255,255,0.7);
             backdrop-filter: blur(8px);
-            border-radius: 1rem;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.3s ease;
+        }
+
+        .current-county-container {
             padding: 1rem 1.5rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid rgba(255,255,255,0.5);
-            transition: var(--transition-smooth);
-        }
-        .current-county-container:hover {
-            background: rgba(255,255,255,0.9);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-        .county-info {
-            display: flex;
-            align-items: baseline;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        .change-county-link {
-            color: var(--orange);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .change-county-link:hover {
-            text-shadow: 0 0 4px rgba(249,115,22,0.5);
-            transform: translateX(2px);
         }
 
-        /* Dynamic Weather Background (will be set by JS) */
-        .weather-container {
-            transition: background 0.5s ease;
-            border-radius: 2rem;
-            padding: 0.5rem;
-        }
-
-        /* Current Weather Card */
         .current-weather-compact {
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(12px);
-            border-radius: 2rem;
             padding: 1.8rem;
             margin-bottom: 2rem;
-            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            transition: var(--transition-smooth);
-            border: 1px solid rgba(255,255,255,0.6);
-            animation: floatCard 4s ease-in-out infinite;
-        }
-
-        @keyframes floatCard {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
-            100% { transform: translateY(0px); }
-        }
-
-        .current-weather-compact:hover {
-            transform: scale(1.01);
-            box-shadow: 0 25px 40px -12px rgba(0,0,0,0.2);
-            background: rgba(255,255,255,0.95);
         }
 
         .current-temp {
@@ -283,117 +222,44 @@
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            animation: breathe 2s ease-in-out infinite;
-            display: inline-block;
         }
 
-        @keyframes breathe {
-            0% { text-shadow: 0 0 0px rgba(249,115,22,0); }
-            50% { text-shadow: 0 0 8px rgba(249,115,22,0.4); }
-            100% { text-shadow: 0 0 0px rgba(249,115,22,0); }
-        }
-
-        .current-condition {
-            font-size: 1.2rem;
-            font-weight: 500;
-            text-transform: capitalize;
-            color: var(--slate-700);
-        }
-
-        .current-details {
-            display: flex;
-            gap: 1.5rem;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--slate-600);
-        }
-
-        .current-icon img {
-            width: 80px;
-            height: 80px;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
-            animation: spinSlow 12s linear infinite;
-        }
-
-        @keyframes spinSlow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Hourly Forecast */
-        .hourly-forecast {
-            margin-bottom: 2rem;
-        }
         .hourly-list {
             display: flex;
             gap: 1rem;
             overflow-x: auto;
             padding-bottom: 1rem;
-            scrollbar-width: thin;
         }
+
         .hourly-card {
             min-width: 90px;
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(8px);
-            border-radius: 1.5rem;
             padding: 1rem 0.5rem;
             text-align: center;
-            transition: var(--transition-smooth);
-            animation: slideInFromRight 0.4s ease-out;
-            border: 1px solid rgba(255,255,255,0.5);
         }
 
-        @keyframes slideInFromRight {
-            from { opacity: 0; transform: translateX(40px); }
-            to { opacity: 1; transform: translateX(0); }
+        .hourly-card:hover, .forecast-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.9);
         }
 
-        .hourly-card:hover {
-            transform: translateY(-8px) scale(1.03);
-            background: rgba(255,255,255,0.95);
-            box-shadow: 0 15px 25px -10px rgba(0,0,0,0.15);
-        }
-
-        .hourly-icon img {
-            width: 45px;
-            height: 45px;
-            transition: transform 0.2s;
-        }
-        .hourly-card:hover .hourly-icon img {
-            transform: scale(1.1);
-        }
-
-        /* Daily Forecast */
         .forecast-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
             gap: 1rem;
         }
+
         .forecast-card {
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(8px);
-            border-radius: 1.5rem;
             padding: 1rem;
             text-align: center;
-            transition: var(--transition-smooth);
-            animation: fadeInUp 0.5s ease-out;
-            border: 1px solid rgba(255,255,255,0.5);
-        }
-        .forecast-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255,255,255,0.95);
-            box-shadow: 0 12px 20px -8px rgba(0,0,0,0.15);
-        }
-        .forecast-icon img {
-            width: 50px;
-            height: 50px;
-            transition: transform 0.2s;
-        }
-        .forecast-card:hover .forecast-icon img {
-            transform: scale(1.1);
         }
 
-        /* Loading & Errors */
+        .change-county-link {
+            color: var(--orange);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Spinner */
         .spinner {
             border: 4px solid rgba(0,0,0,0.1);
             border-top: 4px solid var(--orange);
@@ -403,12 +269,13 @@
             animation: spin 1s linear infinite;
             margin: 2rem auto;
         }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* Responsive */
+        /* Mobile */
         .menu-toggle-dashboard {
             display: none;
             background: linear-gradient(135deg, var(--orange), var(--emerald));
@@ -417,7 +284,6 @@
             padding: 0.5rem 1rem;
             border-radius: 2rem;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         @media (max-width: 768px) {
@@ -438,57 +304,67 @@
     </style>
 </head>
 <body>
-<div class="dashboard-layout">
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <a href="dashboard.html" class="logo">
-                <div class="logo-icon"><i data-lucide="cloud-sun"></i></div>
-                <div class="logo-text">
-                    <span class="logo-title">Mkulima Alert</span>
-                    <span class="logo-sub">Climate Smart</span>
+    <!-- Video Background -->
+    <video autoplay muted loop playsinline id="bg-video">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-sunny-day-in-a-wheat-field-41017-large.mp4" type="video/mp4">
+    </video>
+    <div class="overlay"></div>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="logo">
+                    <div class="logo-icon"><i data-lucide="cloud-sun"></i></div>
+                    <div class="logo-text">
+                        <span class="logo-title">Mkulima Alert</span>
+                        <span class="logo-sub">Climate Smart</span>
+                    </div>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item active"><i data-lucide="cloud-sun"></i> Weather</a>
+                <a href="marketplace.html" class="nav-item"><i data-lucide="shopping-cart"></i> Marketplace</a>
+                <a href="forum.html" class="nav-item"><i data-lucide="message-square"></i> Forum</a>
+                <a href="consultation.html" class="nav-item"><i data-lucide="phone-call"></i> Consultation</a>
+                <a href="profile.html" class="nav-item"><i data-lucide="user"></i> My Profile</a>
+                <a href="#" class="nav-item" id="logoutBtn"><i data-lucide="log-out"></i> Logout</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <h1>Welcome, <span id="userName">Farmer</span>!</h1>
+                <button class="menu-toggle-dashboard" id="menuToggle">☰ Menu</button>
+            </div>
+
+            <div class="current-county-container">
+                <div class="county-info">
+                    <span class="label">Your County:</span>
+                    <span id="currentCountyDisplay" class="county-name">Loading...</span>
+                    <a href="profile.html" class="change-county-link">Change</a>
                 </div>
-            </a>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item active"><i data-lucide="cloud-sun"></i> Weather</a>
-            <a href="marketplace.html" class="nav-item"><i data-lucide="shopping-cart"></i> Marketplace</a>
-            <a href="forum.html" class="nav-item"><i data-lucide="message-square"></i> Forum</a>
-            <a href="consultation.html" class="nav-item"><i data-lucide="phone-call"></i> Consultation</a>
-            <a href="profile.html" class="nav-item"><i data-lucide="user"></i> My Profile</a>
-            <a href="#" class="nav-item" id="logoutBtn"><i data-lucide="log-out"></i> Logout</a>
-        </nav>
-    </aside>
-
-    <main class="main-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-            <h1>Welcome, <span id="userName">Farmer</span>!</h1>
-            <button class="menu-toggle-dashboard" id="menuToggle">☰ Menu</button>
-        </div>
-
-        <div class="current-county-container">
-            <div class="county-info">
-                <span class="label">Your County:</span>
-                <span id="currentCountyDisplay" class="county-name">Loading...</span>
-                <a href="profile.html" class="change-county-link">Change</a>
+                <div id="weatherContainer" class="weather-container">
+                    <div class="spinner"></div>
+                </div>
             </div>
-            <div id="weatherContainer" class="weather-container">
-                <div class="spinner"></div>
-            </div>
-        </div>
-    </main>
-</div>
+        </main>
+    </div>
 
-<script src="dashboard.js"></script>
-<script>
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    if (menuToggle) {
-        menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-    }
-    document.getElementById('logoutBtn').addEventListener('click', (e) => {
-        e.preventDefault();
-        auth.signOut().then(() => window.location.href = "index.html");
-    });
-</script>
+    <script src="dashboard.js"></script>
+    <script>
+        // Sidebar toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => window.location.href = "index.html");
+        });
+    </script>
 </body>
 </html>
